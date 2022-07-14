@@ -17,7 +17,7 @@
           :align="col.align || 'center'"
           :width="col.width"
           :sortable="col.sort || false"
-          :fixed="col.fixed"
+          :fixed="col.fixed || false"
           min-width="80px"
           show-overflow-tooltip
         >
