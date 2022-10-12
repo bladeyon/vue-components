@@ -11,6 +11,7 @@
     >
       <template v-for="col in tableOpts.cols">
         <el-table-column
+          v-if="col.isShow !== false"
           :prop="col.field"
           :label="col.label"
           :key="col.field"
@@ -28,17 +29,16 @@
               }}
             </span>
             <span v-else>
-              <template v-for="btn in col.OperateBtn">
-                <el-button
-                  :key="btn.label"
-                  :icon="btn.icon"
-                  type="text"
-                  size="mini"
-                  @click="btn.handler($event, row)"
-                >
-                  {{ btn.label }}
-                </el-button>
-              </template>
+              <el-button
+                v-for="btn in col.OperateBtn"
+                :key="btn.label"
+                :icon="btn.icon"
+                type="text"
+                size="mini"
+                @click="btn.handler(row)"
+              >
+                {{ btn.label }}
+              </el-button>
             </span>
           </template>
         </el-table-column>
@@ -74,6 +74,14 @@ export default {
           }
         };
       }
+    }
+  },
+  watch: {
+    tableOpts: {
+      handler: (nVal) => {
+        console.log(nVal);
+      },
+      deep: true
     }
   },
   methods: {
