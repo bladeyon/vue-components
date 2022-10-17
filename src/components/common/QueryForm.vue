@@ -1,5 +1,10 @@
 <template>
-  <el-form class="query-form" :inline="true" :model="form" label-width="80px">
+  <el-form
+    class="query-form"
+    :inline="true"
+    :model="form"
+    :label-width="query.labelWidth || '80px'"
+  >
     <template v-if="isShowFormItem">
       <el-form-item
         class="form-item"
@@ -74,7 +79,7 @@ export default {
   props: ["query"],
   data() {
     return {
-      form: {},
+      form: {}
     };
   },
   computed: {
@@ -92,7 +97,7 @@ export default {
         }
         return status;
       };
-    },
+    }
   },
   watch: {
     "query.form": {
@@ -102,8 +107,8 @@ export default {
         });
       },
       deep: true,
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   created() {},
   methods: {
@@ -116,8 +121,8 @@ export default {
       } else {
         this.form[field] = [];
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
