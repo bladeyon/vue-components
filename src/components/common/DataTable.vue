@@ -82,12 +82,12 @@ export default {
     }
   },
   watch: {
-    tableOpts: {
-      handler: (nVal) => {
-        console.log(nVal);
-      },
-      deep: true
-    }
+    // tableOpts: {
+    //   handler: (nVal) => {
+    //     console.log(nVal);
+    //   },
+    //   deep: true
+    // }
   },
   methods: {
     changePage(pages) {
