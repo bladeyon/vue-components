@@ -1,103 +1,172 @@
 <template>
   <div class="data-table">
     <el-table
-      :data="tableOpts.data"
+      :data="optionsLatest.data"
       :max-height="tableHeight"
-      :default-sort="tableOpts.sort"
+      :default-sort="optionsLatest.sort"
       stripe
       fit
       highlight-current-row
-      style="width: 100%"
+      :style="{ width: '100%', fontSize: optionsLatest.fontSize }"
+      :filtered-value="[1, 2, 3]"
+      @cell-click="cellClick"
+      :cell-style="optionsLatest.cellStyle"
     >
-      <template v-for="col in tableOpts.cols">
-        <el-table-column
-          v-if="col.isShow !== false"
-          :prop="col.field"
-          :label="col.label"
-          :key="col.field"
-          :align="col.align || 'center'"
-          :width="col.width"
-          :sortable="col.sort || false"
-          :fixed="col.fixed || false"
-          min-width="80px"
-          show-overflow-tooltip
-        >
-          <template slot-scope="{ row }">
-            <span v-if="!col.OperateBtn">
-              {{
-                !col.formatter ? row[col.field] : col.formatter(row[col.field])
-              }}
-            </span>
-            <span v-else>
-              <el-button
-                v-for="btn in col.OperateBtn"
-                :key="btn.label"
-                :icon="btn.icon"
-                type="text"
-                size="mini"
-                @click="btn.handler(row)"
-              >
-                {{
-                  btn.label ||
-                  (!col.formatter
-                    ? row[col.field]
-                    : col.formatter(row[col.field]))
-                }}
-              </el-button>
-            </span>
-          </template>
-        </el-table-column>
-      </template>
+      <el-table-column
+        v-if="optionsLatest.option.multiSelect"
+        type="selection"
+        width="50"
+      >
+      </el-table-column>
+      <el-table-column
+        v-if="optionsLatest.option.rowNum"
+        type="index"
+        width="50"
+        label="序号"
+        align="center"
+      >
+      </el-table-column>
+
+      <el-table-column
+        v-for="col in optionsLatest.cols"
+        :prop="col.field"
+        :label="col.label"
+        :key="col.field"
+        :align="col.align || 'center'"
+        :width="col.width"
+        :sortable="col.sort || false"
+        :fixed="col.fixed || false"
+        :min-width="col.minWidth || '80px'"
+        show-overflow-tooltip
+        header-align="center"
+      >
+        <template v-if="col.children && col.children.length > 0">
+          <TableColItem :columns="col.children" />
+        </template>
+        <template slot-scope="{ row }">
+          <span v-if="col.OperateBtn">
+            <el-button
+              v-for="btn in col.OperateBtn"
+              :key="btn.label"
+              :icon="btn.icon"
+              type="text"
+              size="mini"
+              @click="btn.handler($event, row)"
+            >
+              {{ btn.label }}
+            </el-button>
+          </span>
+          <span v-else :style="col.style">
+            {{
+              !col.formatter
+                ? row[col.field]
+                : col.formatter(row[col.field], row)
+            }}
+          </span>
+        </template>
+      </el-table-column>
     </el-table>
-    <pagination
-      v-show="tableOpts.total > 0"
-      :total="tableOpts.total"
-      :page.sync="tableOpts.pages.current"
-      :limit.sync="tableOpts.pages.size"
-      class="pagination"
-      style="margin-top: 10px"
-      @pagination="changePage"
-    />
+    <el-pagination
+      style="margin-top: 6px"
+      background
+      v-show="optionsLatest.showPagination && optionsLatest.total > 0"
+      @size-change="changeSize"
+      @current-change="changePage"
+      :page-sizes="[10, 20, 50, 100]"
+      :page-size.async="size"
+      :current-page.async="current"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="optionsLatest.total"
+    >
+    </el-pagination>
   </div>
 </template>
 <script>
-import Pagination from "@/components/Pagination";
+import { merge } from 'lodash';
+import TableColItem from './TableColItem.vue';
+
 export default {
-  components: { Pagination },
+  components: { TableColItem },
   props: {
-    tableHeight: Number,
+    tableHeight: String,
     tableOpts: {
       type: Object,
       default() {
         return {
+          fontSize: '12px',
+          option: {
+            rowNum: false,
+            multiSelect: false
+          },
           data: [], // 数据
-          cols: [{ label: "操作时间", field: "operaTime", width: 150 }],
+          cols: [{ label: '操作时间', field: 'operaTime', width: 150 }],
+          showPagination: true,
           total: 0,
           pages: {
             current: 1,
-            size: 20
+            size: 10
           }
         };
       }
     }
   },
-  watch: {
-    // tableOpts: {
-    //   handler: (nVal) => {
-    //     console.log(nVal);
-    //   },
-    //   deep: true
-    // }
+  data() {
+    return {
+      current: 1,
+      size: 10
+    };
+  },
+  computed: {
+    optionsLatest() {
+      const defValue = {
+        fontSize: '12px',
+        option: {
+          rowNum: false,
+          multiSelect: false
+        },
+        data: [], // 数据
+        cols: [],
+        showPagination: true,
+        total: 0,
+        pages: {
+          current: 1,
+          size: 10
+        }
+      };
+      const newOpts = merge(defValue, this.tableOpts);
+      this.current = newOpts.pages.current;
+      this.size = newOpts.pages.size;
+      return newOpts;
+    }
   },
   methods: {
-    changePage(pages) {
-      const { page: current, limit: size } = pages;
-      this.$emit("changePage", {
-        current,
-        size
+    changePage(page) {
+      this.current = page;
+      this.changePagination();
+    },
+    changeSize(size) {
+      this.size = size;
+      this.changePagination();
+    },
+    changePagination() {
+      this.$emit('changePage', {
+        current: this.current,
+        size: this.size
+      });
+    },
+    cellClick(row, column, cell, event) {
+      this.$emit('cellClick', {
+        row,
+        column,
+        cell,
+        event
       });
     }
   }
 };
 </script>
-<style lang=""></style>
+<style lang="scss" scoped>
+.data-table > .el-pagination {
+  text-align: right;
+}
+</style>

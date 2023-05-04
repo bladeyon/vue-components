@@ -1,10 +1,12 @@
 <template>
   <el-form
+    ref="queryForm"
     class="query-form"
     :inline="true"
     :model="form"
     :label-width="query.labelWidth || '80px'"
   >
+    <!-- size="small" -->
     <template v-if="isShowFormItem">
       <el-form-item
         class="form-item"
@@ -47,6 +49,17 @@
             :value="opt.value"
           ></el-option>
         </el-select>
+        <el-date-picker
+          v-else-if="item.component === 'datepicker'"
+          v-model="form[item.field]"
+          :type="item.componentProps.type || 'date'"
+          :default-value="item.default"
+          :value-format="item.componentProps.valueFormat || 'yyyy-MM-dd'"
+          size="small"
+          :placeholder="item.componentProps.placeholder"
+        >
+        </el-date-picker>
+
         <el-radio-group
           v-else-if="item.component === 'radioGroup'"
           v-model="form[item.field]"
@@ -64,6 +77,7 @@
     <el-form-item class="form-item" v-if="isShowQueryBtn">
       <el-button
         v-for="btn in query.btns"
+        :icon="btn.icon"
         :key="btn.text"
         :type="btn.type || 'primary'"
         @click="handleBtnClk(btn.event)"
@@ -76,7 +90,17 @@
 
 <script>
 export default {
-  props: ["query"],
+  props: {
+    query: {
+      type: Object,
+      default() {
+        return {
+          form: [],
+          btns: []
+        };
+      }
+    }
+  },
   data() {
     return {
       form: {}
@@ -90,7 +114,7 @@ export default {
       return this.query.btns?.length > 0;
     },
     mulSelectStatus() {
-      return function (field, options) {
+      return (field, options) => {
         let status = false;
         if (options?.length === this.form[field]?.length) {
           status = true;
@@ -100,10 +124,10 @@ export default {
     }
   },
   watch: {
-    "query.form": {
+    'query.form': {
       handler(newVal) {
         newVal.forEach((f) => {
-          this.$set(this.form, f.field, f.default || "");
+          this.$set(this.form, f.field, f.default || '');
         });
       },
       deep: true,
@@ -128,9 +152,9 @@ export default {
 
 <style lang="scss" scoped>
 .query-form {
-  // .form-item + .form-item {
   .form-item {
     margin-right: 20px;
+    margin-bottom: 10px;
   }
 }
 </style>
