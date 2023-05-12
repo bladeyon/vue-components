@@ -27,6 +27,7 @@
         align="center"
       >
       </el-table-column>
+<<<<<<< HEAD
       <el-table-column
         v-for="col in optionsLatest.cols"
         :key="col.field"
@@ -68,6 +69,12 @@
           :colOpts="child"
         />
       </el-table-column>
+=======
+      <TableColItem
+        v-if="!!optionsLatest.cols && optionsLatest.cols.length > 0"
+        :columns="optionsLatest.cols"
+      />
+>>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
     </el-table>
     <el-pagination
       style="margin-top: 6px"
@@ -172,6 +179,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .data-table {
+<<<<<<< HEAD
+=======
+  .el-table ::v-deep {
+    .is-group > tr:nth-child(odd) { // 存在叶子节点时, 隐藏空白列
+      display: none;
+    }
+  }
+>>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
   & > .el-pagination {
     text-align: right;
   }
