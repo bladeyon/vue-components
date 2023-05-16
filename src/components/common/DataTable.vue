@@ -26,45 +26,10 @@
         align="center"
       >
       </el-table-column>
-
-      <el-table-column
-        v-for="col in optionsLatest.cols"
-        :prop="col.field"
-        :label="col.label"
-        :key="col.field"
-        :align="col.align || 'center'"
-        :width="col.width"
-        :sortable="col.sort || false"
-        :fixed="col.fixed || false"
-        :min-width="col.minWidth || '80px'"
-        show-overflow-tooltip
-        header-align="center"
-      >
-        <template v-if="col.children && col.children.length > 0">
-          <TableColItem :columns="col.children" />
-        </template>
-        <template slot-scope="{ row }">
-          <span v-if="col.OperateBtn">
-            <el-button
-              v-for="btn in col.OperateBtn"
-              :key="btn.label"
-              :icon="btn.icon"
-              type="text"
-              size="mini"
-              @click="btn.handler($event, row)"
-            >
-              {{ btn.label }}
-            </el-button>
-          </span>
-          <span v-else :style="col.style">
-            {{
-              !col.formatter
-                ? row[col.field]
-                : col.formatter(row[col.field], row)
-            }}
-          </span>
-        </template>
-      </el-table-column>
+      <TableColItem
+        v-if="!!optionsLatest.cols && optionsLatest.cols.length > 0"
+        :columns="optionsLatest.cols"
+      />
     </el-table>
     <el-pagination
       style="margin-top: 6px"
@@ -88,7 +53,7 @@ import TableColItem from './TableColItem.vue';
 export default {
   components: { TableColItem },
   props: {
-    tableHeight: String,
+    tableHeight: Number,
     tableOpts: {
       type: Object,
       default() {
@@ -166,7 +131,14 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-.data-table > .el-pagination {
-  text-align: right;
+.data-table {
+  .el-table ::v-deep {
+    .is-group > tr:nth-child(odd) { // 存在叶子节点时, 隐藏空白列
+      display: none;
+    }
+  }
+  & > .el-pagination {
+    text-align: right;
+  }
 }
 </style>
