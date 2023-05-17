@@ -1,6 +1,7 @@
 <template>
   <div class="data-table">
     <el-table
+      :key="tableKey"
       :data="optionsLatest.data"
       :max-height="tableHeight"
       :default-sort="optionsLatest.sort"
@@ -26,10 +27,47 @@
         align="center"
       >
       </el-table-column>
-      <TableColItem
-        v-if="!!optionsLatest.cols && optionsLatest.cols.length > 0"
-        :columns="optionsLatest.cols"
-      />
+      <el-table-column
+        v-for="col in optionsLatest.cols"
+        :key="col.field"
+        :prop="col.field"
+        :label="col.label"
+        :align="col.align || 'center'"
+        :width="col.width"
+        :sortable="col.sort || false"
+        :fixed="col.fixed || false"
+        :min-width="col.minWidth || '80px'"
+        show-overflow-tooltip
+        header-align="center"
+        :class="col.children?.length > 0 ? 'is-group' : ''"
+      >
+        <template slot-scope="{ row }">
+          <span v-if="col.OperateBtn">
+            <el-button
+              v-for="btn in col.OperateBtn"
+              :key="btn.label"
+              :icon="btn.icon"
+              type="text"
+              size="mini"
+              @click="btn.handler($event, row)"
+            >
+              {{ btn.label }}
+            </el-button>
+          </span>
+          <span v-else :style="col.style">
+            {{
+              !col.formatter
+                ? row[col.field]
+                : col.formatter(row[col.field], row)
+            }}
+          </span>
+        </template>
+        <TableColItem
+          v-for="child in col.children"
+          :key="child.field"
+          :colOpts="child"
+        />
+      </el-table-column>
     </el-table>
     <el-pagination
       style="margin-top: 6px"
@@ -49,7 +87,7 @@
 <script>
 import { merge } from 'lodash';
 import TableColItem from './TableColItem.vue';
-
+import { randomLenNum } from '@/util/index';
 export default {
   components: { TableColItem },
   props: {
@@ -77,6 +115,7 @@ export default {
   },
   data() {
     return {
+      tableKey: randomLenNum(), // 修改key 强制重新渲染
       current: 1,
       size: 10
     };
@@ -101,6 +140,7 @@ export default {
       const newOpts = merge(defValue, this.tableOpts);
       this.current = newOpts.pages.current;
       this.size = newOpts.pages.size;
+      this.tableKey = randomLenNum();
       return newOpts;
     }
   },
@@ -132,11 +172,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .data-table {
-  .el-table ::v-deep {
-    .is-group > tr:nth-child(odd) { // 存在叶子节点时, 隐藏空白列
-      display: none;
-    }
-  }
   & > .el-pagination {
     text-align: right;
   }
