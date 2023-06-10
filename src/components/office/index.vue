@@ -1,5 +1,5 @@
 <template>
-  <div style="height:100%">
+  <div style="height: 100%">
     <div id="placeholder"></div>
   </div>
 </template>
@@ -10,7 +10,7 @@ import { baseUrl, previewFileUrl } from "@/config/env";
 
 export default {
   props: {
-    fileValue:Object,
+    fileValue: Object,
   },
   data() {
     return {
@@ -25,16 +25,26 @@ export default {
     previewFile() {
       const row = this.fileValue;
       const userInfo = store.getters.userInfo;
-      const fileType = row.name.split('.')[1];
-      let docType = '';
-      console.log('row==',row);
-      console.log('fileType==',typeof fileType)
-      if(fileType == 'doc' || fileType =='docx' || fileType =='pdf' || fileType =='txt' ||  fileType =='jpg'){
-        docType = 'word';
-      }else if(fileType == 'xls'|| fileType =='xlsx' || fileType =='csv'){
-        docType = 'cell'
-      }else if(fileType == 'ppt'|| fileType =='pptx' || fileType =='pptm'){
-        docType = 'slide'
+      const fileType = row.name.split(".")[1];
+      let docType = "";
+      console.log("row==", row);
+      console.log("fileType==", typeof fileType);
+      if (
+        fileType == "doc" ||
+        fileType == "docx" ||
+        fileType == "pdf" ||
+        fileType == "txt" ||
+        fileType == "jpg"
+      ) {
+        docType = "word";
+      } else if (fileType == "xls" || fileType == "xlsx" || fileType == "csv") {
+        docType = "cell";
+      } else if (
+        fileType == "ppt" ||
+        fileType == "pptx" ||
+        fileType == "pptm"
+      ) {
+        docType = "slide";
       }
       this.docDialogVisible = true;
       const Base64 = require("js-base64").Base64;
@@ -49,6 +59,15 @@ export default {
           key: row.docId + "@" + randomValue,
           title: row.name,
           url: url,
+          permissions: {
+            download: true,
+            // 启用编辑
+            edit: true,
+            // 启用导出
+            print: true,
+            // 启用预览
+            review: true,
+          },
         },
         documentType: docType,
         editorConfig: {
@@ -64,7 +83,7 @@ export default {
         height: "100%",
         width: "100%",
       };
-      console.log(config)
+      console.log(config);
       //const docEditor = new DocsAPI.DocEditor("placeholder", config);
       setTimeout(() => {
         const docEditor = new DocsAPI.DocEditor("placeholder", config);
