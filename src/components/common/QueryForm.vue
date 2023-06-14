@@ -52,11 +52,23 @@
         <el-date-picker
           v-else-if="item.component === 'datepicker'"
           v-model="form[item.field]"
-          :type="item.componentProps.type || 'date'"
+          :type="item.componentProps?.type || 'date'"
           :default-value="item.default"
-          :value-format="item.componentProps.valueFormat || 'yyyy-MM-dd'"
+          :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
           size="small"
-          :placeholder="item.componentProps.placeholder"
+          :placeholder="item.componentProps?.placeholder"
+        >
+        </el-date-picker>
+        <!-- prettier-ignore -->
+        <el-date-picker
+          v-else-if="item.component === 'daterange'"
+          v-model="form[item.field]"
+          :type="item.componentProps?.type || 'daterange'"
+          :default-value="item.default"
+          :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
+          size="small"
+          :start-placeholder="item.componentProps?.startPlaceholder || '开始时间'"
+          :end-placeholder="item.componentProps?.endPlaceholder || '结束时间'"
         >
         </el-date-picker>
 
