@@ -28,6 +28,7 @@
       >
       </el-table-column>
 <<<<<<< HEAD
+<<<<<<< HEAD
       <el-table-column
         v-for="col in optionsLatest.cols"
         :key="col.field"
@@ -75,6 +76,51 @@
         :columns="optionsLatest.cols"
       />
 >>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
+=======
+      <template v-for="col in optionsLatest.cols">
+        <el-table-column
+          v-if="col.isShow !== false"
+          :key="col.field"
+          :prop="col.field"
+          :label="col.label"
+          :align="col.align || 'center'"
+          :width="col.width"
+          :sortable="col.sort || false"
+          :fixed="col.fixed || false"
+          :min-width="col.minWidth || '80px'"
+          show-overflow-tooltip
+          header-align="center"
+          :class="col.children?.length > 0 ? 'is-group' : ''"
+        >
+          <template slot-scope="{ row }">
+            <span v-if="col.OperateBtn">
+              <el-button
+                v-for="btn in col.OperateBtn"
+                :key="btn.label"
+                :icon="btn.icon"
+                type="text"
+                size="mini"
+                @click="btn.handler($event, row)"
+              >
+                {{ btn.label }}
+              </el-button>
+            </span>
+            <span v-else :style="col.style">
+              {{
+                !col.formatter
+                  ? row[col.field]
+                  : col.formatter(row[col.field], row)
+              }}
+            </span>
+          </template>
+          <TableColItem
+            v-for="child in col.children"
+            :key="child.field"
+            :colOpts="child"
+          />
+        </el-table-column>
+      </template>
+>>>>>>> 2dccd24b (列支持是否显示配置)
     </el-table>
     <el-pagination
       style="margin-top: 6px"

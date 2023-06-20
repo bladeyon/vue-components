@@ -1,6 +1,7 @@
 <template>
 <<<<<<< HEAD
   <el-table-column
+    v-if="colOpts.isShow !== false"
     :prop="colOpts.field"
     :label="colOpts.label"
     :align="colOpts.align || 'center'"
@@ -27,10 +28,13 @@
       </span>
       <span v-else :style="colOpts.style">
         {{
-          !colOpts.formatter ? row[colOpts.field] : colOpts.formatter(row[colOpts.field], row)
+          !colOpts.formatter
+            ? row[colOpts.field]
+            : colOpts.formatter(row[colOpts.field], row)
         }}
       </span>
     </template>
+<<<<<<< HEAD
     <TableColItem v-for="col in colOpts.children" :key="colOpts.field" :colOpts="col" />
 =======
   <!-- 因为el-table中包含原生html元素会出现类顺序混乱问题，这里用el-table-column再包一层, 然后渲染时隐藏掉 -->
@@ -75,6 +79,13 @@
       </template>
     </el-table-column>
 >>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
+=======
+    <TableColItem
+      v-for="col in colOpts.children"
+      :key="colOpts.field"
+      :colOpts="col"
+    />
+>>>>>>> 2dccd24b (列支持是否显示配置)
   </el-table-column>
 </template>
 
