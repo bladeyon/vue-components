@@ -102,7 +102,12 @@
                 size="mini"
                 @click="btn.handler(row)"
               >
-                {{ btn.label }}
+                {{
+                  btn.label ||
+                  (!col.formatter
+                    ? row[col.field]
+                    : col.formatter(row[col.field]))
+                }}
               </el-button>
             </span>
             <span v-else :style="col.style">
