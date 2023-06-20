@@ -100,7 +100,7 @@
                 :icon="btn.icon"
                 type="text"
                 size="mini"
-                @click="btn.handler($event, row)"
+                @click="btn.handler(row)"
               >
                 {{ btn.label }}
               </el-button>
