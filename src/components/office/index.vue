@@ -27,10 +27,10 @@ export default {
     previewFile() {
       const row = this.fileValue;
       getOnlyOfficeConfig(row.docId).then(res => {
-        console.log("res==", res);
+        //console.log("res==", res);
         const config = res.data.data;
          setTimeout(() => {
-            console.log(config)
+           // console.log(config)
         const docEditor = new DocsAPI.DocEditor("placeholder", config);
       }, 1000);
       })
