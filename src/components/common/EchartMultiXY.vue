@@ -3,7 +3,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash';
+import { cloneDeep, merge } from 'lodash';
 import * as echarts from 'echarts/core';
 import {
   GridComponent,
@@ -14,7 +14,7 @@ import {
   DatasetComponent,
   TransformComponent
 } from 'echarts/components';
-import { BarChart } from 'echarts/charts';
+import { BarChart, LineChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 require('echarts/theme/macarons'); // echarts theme
@@ -50,6 +50,7 @@ echarts.use([
   DatasetComponent,
   TransformComponent,
   BarChart,
+  LineChart,
   CanvasRenderer,
   UniversalTransition
 ]);
@@ -64,8 +65,8 @@ export default {
       type: Object,
       required: true,
       default: {
-        title: '', // 图表标题
-        data: [{ yIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [] }],
+        title: {}, // 图表标题
+        series: [{ yIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [] }],
         axis: {
           // 坐标轴维度 name
           x: [{ name: '', type: 'category', data: [] }],
@@ -123,6 +124,7 @@ export default {
             rotate: 0
           },
           axisLine: {
+            show: true,
             lineStyle: {
               color: '#009bff'
             }
@@ -145,7 +147,7 @@ export default {
     };
   },
   watch: {
-    'chartOpt.data': {
+    'chartOpt.series': {
       deep: true,
       handler: function (d) {
         d?.length && this.drawChart();
@@ -154,7 +156,7 @@ export default {
   },
   mounted() {
     this.chart = echarts.init(this.$el, 'macarons');
-    this.chartOpt.data?.length && this.drawChart();
+    this.chartOpt.series?.length && this.drawChart();
   },
   beforeDestroy() {
     this.chart.dispose();
@@ -167,54 +169,39 @@ export default {
       this.clear();
 
       const option = cloneDeep(this.option);
-      const len = this.chartOpt.data?.length;
+      const len = this.chartOpt.series?.length;
       if (!len) {
         this.$message.info('暂无数据');
         this.clear();
         return;
       }
 
-      option.title.text = this.chartOpt.title;
+      option.title = merge(option.title, this.chartOpt?.title);
+      option.legend = merge(option.legend, this.chartOpt?.legend);
+      option.grid = merge(option.grid, this.chartOpt?.grid);
 
-      if (this.chartOpt.grid) {
-        option.grid = Object.assign({}, option.grid, this.chartOpt.grid);
-      }
-
-      if (this.chartOpt.color) {
+      if (this.chartOpt?.color) {
         option.color = this.chartOpt.color;
       }
 
       // 多轴
-      if (Array.isArray(this.chartOpt.axis.x)) {
+      if (Array.isArray(this.chartOpt.axis?.x)) {
         const xAxis = [];
         this.chartOpt.axis.x.forEach((x) => {
-          xAxis.push(Object.assign({}, option.xAxis, x));
+          xAxis.push(merge(option.xAxis, x));
         });
         option.xAxis = xAxis;
       } else {
-        option.xAxis = Object.assign({}, option.xAxis, this.chartOpt.axis.x);
+        option.xAxis = merge(option.xAxis, this.chartOpt.axis.x);
       }
 
       option.yAxis = this.chartOpt.axis.y;
 
-      this.chartOpt.data.forEach((d, idx) => {
-        option.series.push({
-          yAxisIndex: d.yIndex ?? 0,
-          type: d.type || 'bar',
-          name: d.name || '',
-          data: Array.isArray(d) ? d : d.data,
-          stack: d.stack || '',
-          [d.areaStyle && 'areaStyle']: d.areaStyle || '',
-          label: {
-            show: true,
-            color: '#333',
-            fontSize: 12,
-            fontWeight: 'bold',
-            position: 'top'
-          },
-          itemStyle: d.itemStyle || {},
+      this.chartOpt.series.forEach((d, idx) => {
+        const series = {
           animationDuration
-        });
+        };
+        option.series.push(merge(series, d));
       });
 
       // // chart 宽度
