@@ -68,7 +68,7 @@ export default {
     };
   },
   watch: {
-    chartOpt: {
+    'chartOpt.series': {
       deep: true,
       handler: function (d) {
         d?.length && this.drawChart();
@@ -141,6 +141,9 @@ export default {
       if (this.chartOpt?.color) {
         option.color = this.chartOpt.color;
       }
+      if (this.chartOpt?.visualMap) {
+        option.visualMap = this.chartOpt.visualMap;
+      }
 
       // 多轴
       const xData = []; // 存 xAxisLabel
@@ -148,12 +151,12 @@ export default {
         const xAxis = [];
         this.chartOpt.axis.x.forEach((x) => {
           xAxis.push(x);
-          xData.push(x.data);
+          x.data && xData.push(x.data);
         });
         option.xAxis = xAxis;
       } else {
         option.xAxis.push(...this.chartOpt.axis.x);
-        xData.push(...this.chartOpt.axis.x.data);
+        this.chartOpt.axis.x.data && xData.push(...this.chartOpt.axis.x.data);
       }
 
       // 计算 chart size
@@ -200,7 +203,7 @@ export default {
       // const xAxisW = chartW * (1 - 0.1);
       // // 设置 x 轴 label 旋转
       // option.xAxis.axisLabel.rotate = categoryW > xAxisW ? 40 : 0;
-      console.log(option);
+      console.log('EchartMultiXY option:', option);
       chart.setOption(option);
     }
   }
