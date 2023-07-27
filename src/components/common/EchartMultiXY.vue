@@ -14,32 +14,12 @@ import {
   DatasetComponent,
   TransformComponent
 } from 'echarts/components';
-import { BarChart, LineChart } from 'echarts/charts';
+import { BarChart, LineChart, ScatterChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 require('echarts/theme/macarons'); // echarts theme
 import resize from '@/util/resize';
-
-/**
- * 计算文本在屏幕上所占的宽度
- * @param {String} text - 文本
- * @param {Number} fontSize - 字体大小
- * @returns {Number}
- */
-function computeTextWidth(text, fontSize = 12) {
-  // const canvas = document.createElement('canvas');
-  // const context = canvas.getContext('2d');
-  // context.font = fontSize + 'px';
-  // return context.measureText(text).width;
-  const div = document.createElement('div');
-  div.innerText = text;
-  div;
-  div.style.cssText = `font-size:${fontSize}px;display:inline-block;`;
-  document.body.appendChild(div);
-  const maxWidth = parseFloat(window.getComputedStyle(div).width);
-  document.body.removeChild(div);
-  return maxWidth;
-}
+import { computeTextWidth } from '@/util';
 
 echarts.use([
   GridComponent,
@@ -51,6 +31,7 @@ echarts.use([
   TransformComponent,
   BarChart,
   LineChart,
+  ScatterChart,
   CanvasRenderer,
   UniversalTransition
 ]);
@@ -66,7 +47,12 @@ export default {
       required: true,
       default: {
         title: {}, // 图表标题
-        series: [{ yIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [] }],
+        grid: {},
+        tooltip: {},
+        color: [],
+        series: [
+          { yIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [1, 2, 3] }
+        ],
         axis: {
           // 坐标轴维度 name
           x: [{ name: '', type: 'category', data: [] }],
@@ -78,76 +64,11 @@ export default {
   mixins: [resize],
   data() {
     return {
-      chart: null,
-      option: {
-        title: {
-          text: '',
-          textStyle: {
-            color: '#333',
-            fontWeight: 'bold'
-          }
-        },
-        tooltip: {
-          trigger: 'axis',
-          axisPointer: {
-            type: 'shadow'
-          },
-          backgroundColor: '#fff',
-          textStyle: {
-            color: '#000'
-          }
-        },
-        // color: ["#ffb900", "#1ab13c", "#00b294", "#dff6dd"],
-        legend: {
-          type: 'scroll',
-          // orient: 'vertical',
-          top: 20,
-          // bottom: 20,
-          // right: 5,
-          textStyle: {
-            color: '#000',
-            fontSize: 12
-          }
-        },
-        grid: {
-          left: '3%',
-          right: '6%',
-          bottom: '0%',
-          containLabel: true
-        },
-        xAxis: {
-          type: 'category',
-          axisLabel: {
-            interval: 0, // 标签间隔数：0 显示所有标签
-            color: '#000',
-            fontSize: 16,
-            rotate: 0
-          },
-          axisLine: {
-            show: true,
-            lineStyle: {
-              color: '#009bff'
-            }
-          },
-          boundaryGap: true,
-          axisTick: {
-            alignWithLabel: true // 刻度与标签对齐 boundaryGap 为 true 的时候有效
-          },
-          splitLine: {
-            lineStyle: {
-              type: 'dashed',
-              color: '#006c9d'
-              // opacity: 0.5,
-            }
-          }
-        },
-        yAxis: [],
-        series: []
-      }
+      chart: null
     };
   },
   watch: {
-    'chartOpt.series': {
+    chartOpt: {
       deep: true,
       handler: function (d) {
         d?.length && this.drawChart();
@@ -155,20 +76,10 @@ export default {
     }
   },
   mounted() {
-    this.chart = echarts.init(this.$el, 'macarons');
     this.chartOpt.series?.length && this.drawChart();
   },
-  beforeDestroy() {
-    this.chart.dispose();
-  },
   methods: {
-    clear() {
-      this.chart.clear();
-    },
     drawChart() {
-      this.clear();
-
-      const option = cloneDeep(this.option);
       const len = this.chartOpt.series?.length;
       if (!len) {
         this.$message.info('暂无数据');
@@ -176,24 +87,98 @@ export default {
         return;
       }
 
+      const option = {
+        title: {
+          text: '',
+          textStyle: {
+            color: '#333',
+            fontWeight: 'bold'
+          }
+        },
+        grid: {
+          top: 40,
+          bottom: 10,
+          left: 50,
+          right: 50
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          },
+          backgroundColor: 'transparent',
+          textStyle: {
+            color: '#fff'
+          }
+        },
+        legend: {
+          type: 'scroll',
+          top: 5,
+          textStyle: {
+            fontSize: 12
+          }
+        },
+        xAxis: [],
+        yAxis: [],
+        series: []
+      };
+
+      const chartContainer = this.$el;
+      const containerSize = chartContainer.getBoundingClientRect();
+      const chart = echarts.init(chartContainer, 'macarons', {
+        width: containerSize.width,
+        height: containerSize.height
+      });
+      // // 监听屏幕变化自动缩放图表
+      // window.addEventListener('resize', function () {
+      //   chart.resize();
+      // });
+
       option.title = merge(option.title, this.chartOpt?.title);
       option.legend = merge(option.legend, this.chartOpt?.legend);
-      option.grid = merge(option.grid, this.chartOpt?.grid);
+      option.tooltip = merge(option.tooltip, this.chartOpt?.tooltip);
 
       if (this.chartOpt?.color) {
         option.color = this.chartOpt.color;
       }
 
       // 多轴
+      const xData = []; // 存 xAxisLabel
       if (Array.isArray(this.chartOpt.axis?.x)) {
         const xAxis = [];
         this.chartOpt.axis.x.forEach((x) => {
-          xAxis.push(merge(option.xAxis, x));
+          xAxis.push(x);
+          xData.push(x.data);
         });
         option.xAxis = xAxis;
       } else {
-        option.xAxis = merge(option.xAxis, this.chartOpt.axis.x);
+        option.xAxis.push(...this.chartOpt.axis.x);
+        xData.push(...this.chartOpt.axis.x.data);
       }
+
+      // 计算 chart size
+      option.grid = merge(option.grid, this.chartOpt?.grid);
+      option.grid.width =
+        containerSize.width -
+        (parseFloat(option.grid.left) + parseFloat(option.grid.right));
+
+      xData.forEach((xLabelList, idx) => {
+        const allLabelWidth = computeTextWidth(
+          xLabelList.join(''),
+          option.xAxis[idx]?.axisLabel?.fontSize ?? 12
+        );
+        if (allLabelWidth > option.grid.width) {
+          option.xAxis[idx] = merge(option.xAxis[idx], {
+            axisLabel: { rotate: 40 }
+          });
+
+          option.grid.bottom = 60;
+        }
+      });
+
+      option.grid.height =
+        containerSize.height -
+        (parseFloat(option.grid.top) + parseFloat(option.grid.bottom));
 
       option.yAxis = this.chartOpt.axis.y;
 
@@ -216,7 +201,7 @@ export default {
       // // 设置 x 轴 label 旋转
       // option.xAxis.axisLabel.rotate = categoryW > xAxisW ? 40 : 0;
       console.log(option);
-      this.chart.setOption(option);
+      chart.setOption(option);
     }
   }
 };
