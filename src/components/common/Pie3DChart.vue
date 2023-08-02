@@ -1,5 +1,5 @@
 <template>
-  <div style="width: 100%; height: 100%"></div>
+  <div style="width: 100%; height: 100%; position: relative"></div>
 </template>
 
 <script>
@@ -55,13 +55,6 @@ export default {
           text: ''
         },
         credits: { enabled: false },
-        legend: {
-          enabled: true,
-          layout: 'vertical',
-          width: 100,
-          align: 'right',
-          verticalAlign: 'middle'
-        },
         tooltip: {
           shape: 'rect',
           followPointer: true,
@@ -93,8 +86,7 @@ export default {
               verticalAlign: 'middle',
               // format: '<b>{point.name}</b>', // ({point.y})
               color: '#fff', // (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black',
-              allowOverlap: false,
-
+              allowOverlap: false
             },
             opacity: 1,
             center: ['50%', '50%']
@@ -104,8 +96,46 @@ export default {
       };
 
       options = merge(options, this.chartOpt);
-      console.log(options);
-      Highcharts.chart(this.$el, options);
+      const chart = Highcharts.chart(this.$el, options);
+
+      // 3d 饼图没有legend 自己生成
+      if (this.chartOpt.legend?.enabled) {
+        console.log(chart);
+        // const chart = Highcharts.charts[0];
+        // if (!chart) {
+        //   return;
+        // }
+        const legendPosition = this.chartOpt.legend;
+        const legendContainer = document.createElement('ul');
+        legendContainer.style.cssText = `position: absolute;
+                              top:${legendPosition.top ?? 'auto'};
+                              bottom:${legendPosition.bottom ?? 'auto'};
+                              left:${legendPosition.left ?? 'auto'};
+                              right:${legendPosition.right ?? 'auto'};
+                              display: flex;
+                              flex-direction: ${
+                                legendPosition.layout === 'vertical'
+                                  ? 'column'
+                                  : 'row'
+                              };`;
+
+        !!chart.series?.length &&
+          chart.series[0]?.data.forEach(function (point) {
+            const legendItem = document.createElement('li');
+            legendItem.style.cssText =
+              'margin-bottom: 5px;display: flex;align-items: center;';
+            const icon = document.createElement('i');
+            icon.style.cssText = `display:inline-block;width: 12px;height: 12px;margin-right:5px;background-color:${point.color};`;
+            const label = document.createElement('span');
+            label.style.cssText = `color:${point.color};`;
+            label.textContent = `${point.name} ${point.subName}`;
+            legendItem.appendChild(icon);
+            legendItem.appendChild(label);
+            legendContainer.appendChild(legendItem);
+          });
+
+        this.$el.appendChild(legendContainer);
+      }
     }
   }
 };
