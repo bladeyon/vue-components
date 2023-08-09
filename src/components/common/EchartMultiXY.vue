@@ -51,7 +51,7 @@ export default {
         tooltip: {},
         color: [],
         series: [
-          { yIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [1, 2, 3] }
+          { yAxisIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [1, 2, 3] }
         ],
         axis: {
           // 坐标轴维度 name
@@ -143,6 +143,9 @@ export default {
       }
       if (this.chartOpt?.visualMap) {
         option.visualMap = this.chartOpt.visualMap;
+      }
+      if (this.chartOpt?.dataZoom) {
+        option.dataZoom = this.chartOpt.dataZoom;
       }
 
       // 多轴
