@@ -165,19 +165,25 @@ export default {
         containerSize.width -
         (parseFloat(option.grid.left) + parseFloat(option.grid.right));
 
-      xData.forEach((xLabelList, idx) => {
-        const allLabelWidth = computeTextWidth(
-          xLabelList.join(''),
-          option.xAxis[idx]?.axisLabel?.fontSize ?? 12
-        );
-        if (allLabelWidth > option.grid.width) {
-          option.xAxis[idx] = merge(option.xAxis[idx], {
-            axisLabel: { rotate: 40 }
-          });
+      // 如果要求强制显示所有xAxisLabel，即xAxis:{axisLabel:{interval:0}}
+      if (
+        option.xAxis.axisLabel?.interval !== undefined &&
+        option.xAxis.axisLabel?.interval !== 'auto'
+      ) {
+        xData.forEach((xLabelList, idx) => {
+          const allLabelWidth = computeTextWidth(
+            xLabelList.join(''),
+            option.xAxis[idx]?.axisLabel?.fontSize ?? 12
+          );
+          if (allLabelWidth > option.grid.width) {
+            option.xAxis[idx] = merge(option.xAxis[idx], {
+              axisLabel: { rotate: 40 }
+            });
 
-          option.grid.bottom = 60;
-        }
-      });
+            option.grid.bottom = 60;
+          }
+        });
+      }
 
       option.grid.height =
         containerSize.height -
