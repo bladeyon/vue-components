@@ -1,5 +1,13 @@
 <template>
-  <div style="width: 100%; height: 100%"></div>
+  <div
+    style="
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    "
+  ></div>
 </template>
 
 <script>
@@ -18,7 +26,6 @@ import { BarChart, LineChart, ScatterChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
 require('echarts/theme/macarons'); // echarts theme
-import resize from '@/util/resize';
 import { computeTextWidth } from '@/util';
 
 echarts.use([
@@ -51,7 +58,13 @@ export default {
         tooltip: {},
         color: [],
         series: [
-          { yAxisIndex: 0, type: 'bar', name: '', itemStyle: {}, data: [1, 2, 3] }
+          {
+            yAxisIndex: 0,
+            type: 'bar',
+            name: '',
+            itemStyle: {},
+            data: [1, 2, 3]
+          }
         ],
         axis: {
           // 坐标轴维度 name
@@ -61,7 +74,6 @@ export default {
       }
     }
   },
-  mixins: [resize],
   data() {
     return {
       chart: null
@@ -71,22 +83,15 @@ export default {
     'chartOpt.series': {
       deep: true,
       handler: function (d) {
-        d?.length && this.drawChart();
+        this.drawChart();
       }
     }
   },
   mounted() {
-    this.chartOpt.series?.length && this.drawChart();
+    this.drawChart();
   },
   methods: {
     drawChart() {
-      const len = this.chartOpt.series?.length;
-      if (!len) {
-        this.$message.info('暂无数据');
-        this.clear();
-        return;
-      }
-
       const option = {
         title: {
           text: '',
@@ -125,14 +130,22 @@ export default {
 
       const chartContainer = this.$el;
       const containerSize = chartContainer.getBoundingClientRect();
+
+      // if (!this.chartOpt.series?.length) {
+      //   chartContainer.appendChild('<span>暂无数据</span>');
+      //   return;
+      // }
+
       const chart = echarts.init(chartContainer, 'macarons', {
         width: containerSize.width,
         height: containerSize.height
       });
-      // // 监听屏幕变化自动缩放图表
-      // window.addEventListener('resize', function () {
-      //   chart.resize();
-      // });
+
+      chart.clear();
+      // 监听屏幕变化自动缩放图表
+      window.addEventListener('resize', function () {
+        chart.resize();
+      });
 
       option.title = merge(option.title, this.chartOpt?.title);
       option.legend = merge(option.legend, this.chartOpt?.legend);
@@ -201,17 +214,6 @@ export default {
         option.series.push(merge(series, d));
       });
 
-      // // chart 宽度
-      // const chartW = this.chart.getWidth();
-      // const categoryW = computeTextWidth(
-      //   option.xAxis.data.join(),
-      //   option.xAxis.axisLabel.fontSize
-      // );
-
-      // // 坐标轴长度 chart宽度 - margin 减去横向的 10%
-      // const xAxisW = chartW * (1 - 0.1);
-      // // 设置 x 轴 label 旋转
-      // option.xAxis.axisLabel.rotate = categoryW > xAxisW ? 40 : 0;
       console.log('EchartMultiXY option:', option);
       chart.setOption(option);
     }
