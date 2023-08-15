@@ -23,10 +23,11 @@
           v-model="form[item.field]"
           filterable
           collapse-tags
-          :multiple="item.componentProps.multiple"
+          :style="item.style"
+          :multiple="item.multiple || false"
         >
           <span
-            v-if="item.componentProps.multiple"
+            v-if="item.multiple && item.componentProps.checkbox"
             style="line-height: 34px; padding: 0 20px"
           >
             <el-checkbox
