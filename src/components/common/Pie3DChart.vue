@@ -113,13 +113,13 @@ export default {
                                          left:${legendPosition.left ?? 'auto'};
                                          right:${legendPosition.right ?? 'auto'};
                                          display: flex;
-                                         flex-direction: ${legendPosition.layout === 'vertical' ? 'column' : 'row'};`;
+                                         flex-direction: ${legendPosition.layout === 'vertical' ? 'column' : 'row'};
+                                         flex-wrap: wrap;`;
 
         !!chart.series?.length &&
           chart.series[0]?.data.forEach(function (point) {
             const legendItem = document.createElement('li');
-            legendItem.style.cssText =
-              'margin-bottom: 5px;display: flex;align-items: center;';
+            legendItem.style.cssText = legendPosition.itemCSSText;
             const icon = document.createElement('i');
             icon.style.cssText = `display:inline-block;width: 12px;height: 12px;margin-right:5px;background-color:${point.color};`;
             const label = document.createElement('span');
