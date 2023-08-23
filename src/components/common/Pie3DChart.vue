@@ -100,24 +100,20 @@ export default {
 
       // 3d 饼图没有legend 自己生成
       if (this.chartOpt.legend?.enabled) {
-        console.log(chart);
         // const chart = Highcharts.charts[0];
         // if (!chart) {
         //   return;
         // }
         const legendPosition = this.chartOpt.legend;
         const legendContainer = document.createElement('ul');
+        // prettier-ignore
         legendContainer.style.cssText = `position: absolute;
-                              top:${legendPosition.top ?? 'auto'};
-                              bottom:${legendPosition.bottom ?? 'auto'};
-                              left:${legendPosition.left ?? 'auto'};
-                              right:${legendPosition.right ?? 'auto'};
-                              display: flex;
-                              flex-direction: ${
-                                legendPosition.layout === 'vertical'
-                                  ? 'column'
-                                  : 'row'
-                              };`;
+                                         top:${legendPosition.top ?? 'auto'};
+                                         bottom:${legendPosition.bottom ?? 'auto' };
+                                         left:${legendPosition.left ?? 'auto'};
+                                         right:${legendPosition.right ?? 'auto'};
+                                         display: flex;
+                                         flex-direction: ${legendPosition.layout === 'vertical' ? 'column' : 'row'};`;
 
         !!chart.series?.length &&
           chart.series[0]?.data.forEach(function (point) {
