@@ -66,6 +66,7 @@
           v-model="form[item.field]"
           :type="item.componentProps?.type || 'daterange'"
           :default-value="item.default"
+          :range-separator="item.componentProps?.separator || '-'"
           :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
           size="small"
           :start-placeholder="item.componentProps?.startPlaceholder || '开始时间'"
