@@ -3,7 +3,10 @@
     <el-table
       :key="tableKey"
       :data="optionsLatest.data"
-      :max-height="tableHeight"
+      :max-height="
+        tableHeight -
+        (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
+      "
       :default-sort="optionsLatest.sort"
       stripe
       fit
