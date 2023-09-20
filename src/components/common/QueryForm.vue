@@ -13,6 +13,7 @@
         v-for="item in query.form"
         :key="item.field"
         :label="item.label"
+        :label-width="item.labelWidth || 'auto'"
       >
         <el-input
           v-if="item.component === 'input'"
