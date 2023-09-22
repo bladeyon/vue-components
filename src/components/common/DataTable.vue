@@ -12,14 +12,16 @@
       fit
       highlight-current-row
       :style="{ width: '100%', fontSize: optionsLatest.fontSize }"
-      :filtered-value="[1, 2, 3]"
       @cell-click="cellClick"
       :cell-style="optionsLatest.cellStyle"
+      :row-class-name="optionsLatest.rowClassName"
+      @selection-change="handleSelectionChange"
     >
       <el-table-column
         v-if="optionsLatest.option.multiSelect"
         type="selection"
         width="50"
+        align="center"
       >
       </el-table-column>
       <el-table-column
@@ -97,21 +99,30 @@
         >
           <template slot-scope="{ row }">
             <span v-if="col.OperateBtn">
-              <el-button
-                v-for="btn in col.OperateBtn"
-                :key="btn.label"
-                :icon="btn.icon"
-                type="text"
-                size="mini"
-                @click="btn.handler(row)"
-              >
-                {{
-                  btn.label ||
-                  (!col.formatter
-                    ? row[col.field]
-                    : col.formatter(row[col.field]))
-                }}
-              </el-button>
+              <template v-for="(btn, index) in col.OperateBtn">
+                <el-tooltip
+                  :disabled="!btn.tips"
+                  :content="btn.tips"
+                  placement="top"
+                  effect="dark"
+                >
+                  <el-button
+                    v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
+                    :key="'btn_' + index + (btn.icon ?? icon.label)"
+                    :icon="btn.icon"
+                    type="text"
+                    size="mini"
+                    @click="btn.handler(row)"
+                  >
+                    {{
+                      btn.label ||
+                      (!col.formatter
+                        ? row[col.field]
+                        : col.formatter(row[col.field]))
+                    }}
+                  </el-button>
+                </el-tooltip>
+              </template>
             </span>
             <span v-else :style="col.style">
               {{
@@ -227,6 +238,9 @@ export default {
         cell,
         event
       });
+    },
+    handleSelectionChange(row) {
+      this.$emit('rowSelection', row);
     }
   }
 };
