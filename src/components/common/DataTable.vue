@@ -108,7 +108,7 @@
                 >
                   <el-button
                     v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
-                    :key="'btn_' + index + (btn.icon ?? icon.label)"
+                    :key="'btn_' + index"
                     :icon="btn.icon"
                     type="text"
                     size="mini"
