@@ -141,7 +141,7 @@ export default {
   watch: {
     'query.form': {
       handler(newVal) {
-        newVal.forEach((f) => {
+        newVal?.forEach((f) => {
           this.$set(this.form, f.field, f.default || '');
         });
       },
