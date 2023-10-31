@@ -4,7 +4,7 @@
     class="query-form"
     :inline="true"
     :model="form"
-    :label-width="query.labelWidth || '80px'"
+    :label-width="query.labelWidth ?? '80px'"
   >
     <!-- size="small" -->
     <template v-if="isShowFormItem">
@@ -13,7 +13,7 @@
         v-for="item in query.form"
         :key="item.field"
         :label="item.label"
-        :label-width="item.labelWidth || 'auto'"
+        :label-width="item.labelWidth ?? '80px'"
       >
         <el-input
           v-if="item.component === 'input'"
@@ -25,7 +25,7 @@
           filterable
           collapse-tags
           :style="item.style"
-          :multiple="item.multiple || false"
+          :multiple="item.multiple ?? false"
         >
           <span
             v-if="item.multiple && item.componentProps.checkbox"
@@ -54,9 +54,9 @@
         <el-date-picker
           v-else-if="item.component === 'datepicker'"
           v-model="form[item.field]"
-          :type="item.componentProps?.type || 'date'"
+          :type="item.componentProps?.type ?? 'date'"
           :default-value="item.default"
-          :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
+          :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
           size="small"
           :placeholder="item.componentProps?.placeholder"
         >
@@ -65,13 +65,13 @@
         <el-date-picker
           v-else-if="item.component === 'daterange'"
           v-model="form[item.field]"
-          :type="item.componentProps?.type || 'daterange'"
+          :type="item.componentProps?.type ?? 'daterange'"
           :default-value="item.default"
-          :range-separator="item.componentProps?.separator || '-'"
-          :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
+          :range-separator="item.componentProps?.separator ?? '-'"
+          :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
           size="small"
-          :start-placeholder="item.componentProps?.startPlaceholder || '开始时间'"
-          :end-placeholder="item.componentProps?.endPlaceholder || '结束时间'"
+          :start-placeholder="item.componentProps?.startPlaceholder ?? '开始时间'"
+          :end-placeholder="item.componentProps?.endPlaceholder ?? '结束时间'"
         >
         </el-date-picker>
 
@@ -94,7 +94,7 @@
         v-for="btn in query.btns"
         :icon="btn.icon"
         :key="btn.text"
-        :type="btn.type || 'primary'"
+        :type="btn.type ?? 'primary'"
         @click="handleBtnClk(btn.event)"
       >
         {{ btn.text }}
