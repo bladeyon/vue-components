@@ -1,13 +1,14 @@
 <template>
   <el-dialog
+    v-dialog-drag
     :visible="visible"
     :title="title"
-    :width="width"
+    :width="width ?? '60%'"
     :destroy-on-close="true"
     :close-on-click-modal="false"
     @close="reset"
   >
-    <div style="height: 80vh">
+    <div :style="{ height: height + 'px' }">
       <VueOfficeDocx
         v-if="suffix.doc.includes(ext)"
         :src="src"
@@ -53,10 +54,7 @@ export default {
       type: String,
       default: '文件预览'
     },
-    width: {
-      type: String,
-      default: '800'
-    },
+    width: String,
     fileUrl: {
       type: String
     },
@@ -83,6 +81,9 @@ export default {
   computed: {
     ext() {
       return this.fileUrl.split('.').pop().toLowerCase();
+    },
+    height() {
+      return this.getMainHeight();
     }
   },
   watch: {
