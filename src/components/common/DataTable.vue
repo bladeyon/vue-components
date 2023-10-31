@@ -1,6 +1,7 @@
 <template>
   <div class="data-table">
     <el-table
+      ref="dataTable"
       :key="tableKey"
       :data="optionsLatest.data"
       :max-height="
@@ -16,7 +17,17 @@
       :cell-style="optionsLatest.cellStyle"
       :row-class-name="optionsLatest.rowClassName"
       @selection-change="handleSelectionChange"
+      @expand-change="handleExpandChange"
     >
+      <el-table-column
+        v-if="optionsLatest.option.expand"
+        type="expand"
+        width="50"
+      >
+        <template #default="slotScope">
+          <slot name="expandContent" :row="slotScope.row"></slot>
+        </template>
+      </el-table-column>
       <el-table-column
         v-if="optionsLatest.option.multiSelect"
         type="selection"
@@ -241,11 +252,15 @@ export default {
     },
     handleSelectionChange(row) {
       this.$emit('rowSelection', row);
+    },
+    handleExpandChange(row, expanded) {
+      this.$emit('expandRow', { row, expanded });
     }
   }
 };
 </script>
 <style lang="scss" scoped>
+<<<<<<< HEAD
 .data-table {
 <<<<<<< HEAD
 =======
@@ -255,6 +270,26 @@ export default {
     }
   }
 >>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
+=======
+.data-table ::v-deep {
+  .el-table__row {
+    .el-table__cell {
+      .el-button.el-button--text {
+        i[class*='el-icon-'] {
+          &[class*='delete'] {
+            color: $color-danger;
+          }
+
+          &[class*='edit'],
+          &[class*='reading'] {
+            color: $color-success;
+          }
+        }
+      }
+    }
+  }
+
+>>>>>>> 8dc9c8dd (表格公共组件增加嵌套子表格功能；设定常用的行间按钮样式)
   & > .el-pagination {
     text-align: right;
   }
