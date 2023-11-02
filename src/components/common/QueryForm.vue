@@ -4,7 +4,7 @@
     class="query-form"
     :inline="true"
     :model="form"
-    :label-width="query.labelWidth ?? '80px'"
+    :label-width="query?.labelWidth ?? '80px'"
   >
     <!-- size="small" -->
     <template v-if="isShowFormItem">
@@ -152,7 +152,8 @@ export default {
   created() {},
   methods: {
     handleBtnClk(eType) {
-      this.$emit(eType, this.form);
+      // 事件类型是 搜索时，需要传递form中表单的值；其他情况传{}
+      this.$emit(eType, eType === 'search' ? this.form : {});
     },
     handlerMulSelect(e, field, options) {
       if (e) {

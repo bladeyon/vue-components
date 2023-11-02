@@ -276,10 +276,14 @@ export default {
     .el-table__cell {
       .el-button.el-button--text {
         i[class*='el-icon-'] {
+          font-size: $font-size-m;
+
+          // 删除图标
           &[class*='delete'] {
             color: $color-danger;
           }
 
+          // 编辑、预览图标
           &[class*='edit'],
           &[class*='reading'] {
             color: $color-success;
