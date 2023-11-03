@@ -16,7 +16,7 @@
         :label-width="item.labelWidth ?? '80px'"
       >
         <el-input
-          v-if="item.component === 'input'"
+          v-if="!item.component || item.component === 'input'"
           v-model="form[item.field]"
         ></el-input>
         <el-select
