@@ -52,7 +52,7 @@ export default {
     chartOpt: {
       type: Object,
       required: true,
-      default: {
+      default: () => ({
         title: {}, // 图表标题
         grid: {},
         tooltip: {},
@@ -71,7 +71,7 @@ export default {
           x: [{ name: '', type: 'category', data: [] }],
           y: [{ name: '', type: 'value' }]
         }
-      }
+      })
     }
   },
   data() {

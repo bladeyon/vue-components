@@ -82,8 +82,8 @@
 =======
     <TableColItem
       v-for="col in colOpts.children"
-      :key="colOpts.field"
-      :colOpts="col"
+      :key="col.field"
+      :col-opts="col"
     />
 >>>>>>> 2dccd24b (列支持是否显示配置)
   </el-table-column>

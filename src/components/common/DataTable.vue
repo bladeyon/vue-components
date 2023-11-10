@@ -6,7 +6,7 @@
       :data="optionsLatest.data"
       :max-height="
         tableHeight -
-        (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
+          (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
       "
       :default-sort="optionsLatest.sort"
       stripe
@@ -33,14 +33,14 @@
         type="selection"
         width="50"
         align="center"
-      >
-      </el-table-column>
+      />
       <el-table-column
         v-if="optionsLatest.option.rowNum"
         type="index"
         width="50"
         label="序号"
         align="center"
+<<<<<<< HEAD
       >
       </el-table-column>
 <<<<<<< HEAD
@@ -93,6 +93,9 @@
       />
 >>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
 =======
+=======
+      />
+>>>>>>> 03c53457 (对部分文件进行 lint)
       <template v-for="col in optionsLatest.cols">
         <el-table-column
           v-if="col.isShow !== false"
@@ -110,30 +113,29 @@
         >
           <template slot-scope="{ row }">
             <span v-if="col.OperateBtn">
-              <template v-for="(btn, index) in col.OperateBtn">
-                <el-tooltip
-                  :disabled="!btn.tips"
-                  :content="btn.tips"
-                  placement="top"
-                  effect="dark"
+              <el-tooltip
+                v-for="(btn, index) in col.OperateBtn"
+                :key="'btn_' + index"
+                :disabled="!btn.tips"
+                :content="btn.tips"
+                placement="top"
+                effect="dark"
+              >
+                <el-button
+                  v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
+                  :icon="btn.icon"
+                  type="text"
+                  size="mini"
+                  @click="btn.handler(row)"
                 >
-                  <el-button
-                    v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
-                    :key="'btn_' + index"
-                    :icon="btn.icon"
-                    type="text"
-                    size="mini"
-                    @click="btn.handler(row)"
-                  >
-                    {{
-                      btn.label ||
+                  {{
+                    btn.label ||
                       (!col.formatter
                         ? row[col.field]
                         : col.formatter(row[col.field]))
-                    }}
-                  </el-button>
-                </el-tooltip>
-              </template>
+                  }}
+                </el-button>
+              </el-tooltip>
             </span>
             <span v-else :style="col.style">
               {{
@@ -146,7 +148,7 @@
           <TableColItem
             v-for="child in col.children"
             :key="child.field"
-            :colOpts="child"
+            :col-opts="child"
           />
         </el-table-column>
       </template>
@@ -159,12 +161,11 @@
       @size-change="changeSize"
       @current-change="changePage"
       :page-sizes="[10, 20, 50, 100]"
-      :page-size.async="size"
-      :current-page.async="current"
+      :page-size.sync="size"
+      :current-page.sync="current"
       layout="total, sizes, prev, pager, next, jumper"
       :total="optionsLatest.total"
-    >
-    </el-pagination>
+    />
   </div>
 </template>
 <script>

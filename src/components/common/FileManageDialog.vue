@@ -9,9 +9,9 @@
     :destroy-on-close="true"
     @close="handleClose"
   >
-    <DataTable :tableHeight="tableHeight" :tableOpts="tableCfg" />
+    <DataTable :table-height="tableHeight" :table-opts="tableCfg" />
 
-    <FilePreview :visible.sync="filePreviewVisible" :fileUrl="fileUrl" />
+    <FilePreview :visible.sync="filePreviewVisible" :file-url="fileUrl" />
   </el-dialog>
 </template>
 <script>

@@ -18,7 +18,7 @@
         <el-input
           v-if="!item.component || item.component === 'input'"
           v-model="form[item.field]"
-        ></el-input>
+        />
         <el-select
           v-else-if="item.component === 'select'"
           v-model="form[item.field]"
@@ -42,14 +42,14 @@
                   item.componentProps.options
                 )
               "
-            ></el-checkbox>
+            />
           </span>
           <el-option
             v-for="opt in item.componentProps.options"
             :key="opt.value"
             :label="opt.label"
             :value="opt.value"
-          ></el-option>
+          />
         </el-select>
         <el-date-picker
           v-else-if="item.component === 'datepicker'"
@@ -59,8 +59,7 @@
           :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
           size="small"
           :placeholder="item.componentProps?.placeholder"
-        >
-        </el-date-picker>
+        />
         <!-- prettier-ignore -->
         <el-date-picker
           v-else-if="item.component === 'daterange'"
@@ -72,8 +71,7 @@
           size="small"
           :start-placeholder="item.componentProps?.startPlaceholder ?? '开始时间'"
           :end-placeholder="item.componentProps?.endPlaceholder ?? '结束时间'"
-        >
-        </el-date-picker>
+        />
 
         <el-radio-group
           v-else-if="item.component === 'radioGroup'"
