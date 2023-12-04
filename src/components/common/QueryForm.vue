@@ -90,6 +90,7 @@
     <el-form-item class="form-item" v-if="isShowQueryBtn">
       <el-button
         v-for="btn in query.btns"
+        v-show="btn.isShow ?? true"
         :icon="btn.icon"
         :key="btn.text"
         :type="btn.type ?? 'primary'"
