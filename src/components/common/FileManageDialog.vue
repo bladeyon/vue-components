@@ -11,12 +11,12 @@
   >
     <DataTable :table-height="tableHeight" :table-opts="tableCfg" />
 
-    <FilePreview :visible.sync="filePreviewVisible" :file-url="fileUrl" />
+    <FilePreviewDialog :visible.sync="filePreviewVisible" :file-url="fileUrl" />
   </el-dialog>
 </template>
 <script>
 import DataTable from '@/components/common/DataTable.vue';
-import FilePreview from '@/components/office/FilePreview.vue';
+import FilePreviewDialog from '@/components/office/FilePreviewDialog.vue';
 import { downloadFile } from '@/api/commonApi';
 import fileSizeConvert from '@/util/fileSizeConvert';
 
@@ -24,7 +24,7 @@ export default {
   name: 'FileManageDialog',
   components: {
     DataTable,
-    FilePreview
+    FilePreviewDialog
   },
   props: {
     visible: Boolean,

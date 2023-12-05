@@ -1,42 +1,32 @@
 <template>
-  <el-dialog
-    v-dialog-drag
-    :visible="visible"
-    :title="title"
-    :width="width ?? '60%'"
-    :destroy-on-close="true"
-    :close-on-click-modal="false"
-    @close="reset"
-  >
-    <div :style="{ height: height + 'px' }">
-      <VueOfficeDocx
-        v-if="suffix.doc.includes(ext)"
-        :src="src"
-        style="height: 100%"
-        @rendered="rendered"
-      />
-      <VueOfficeExcel
-        v-if="suffix.excel.includes(ext)"
-        :src="src"
-        style="height: 100%"
-        @rendered="rendered"
-      />
-      <VueOfficePdf
-        v-if="suffix.pdf.includes(ext)"
-        :src="src"
-        style="height: 100%"
-        @rendered="rendered"
-      />
-      <el-image
-        v-if="suffix.image.includes(ext)"
-        style="width: 100%; height: 100%"
-        :src="src"
-        fit="contain"
-        lazy
-      >
-      </el-image>
-    </div>
-  </el-dialog>
+  <div style="height: 100%">
+    <VueOfficeDocx
+      v-if="suffix.doc.includes(ext)"
+      :src="src"
+      style="height: 100%"
+      @rendered="rendered"
+    />
+    <VueOfficeExcel
+      v-if="suffix.excel.includes(ext)"
+      :src="src"
+      style="height: 100%"
+      @rendered="rendered"
+    />
+    <VueOfficePdf
+      v-if="suffix.pdf.includes(ext)"
+      :src="src"
+      style="height: 100%"
+      @rendered="rendered"
+    />
+    <el-image
+      v-if="suffix.image.includes(ext)"
+      style="width: 100%; height: 100%"
+      :src="src"
+      fit="contain"
+      lazy
+    >
+    </el-image>
+  </div>
 </template>
 <script>
 import request from '@/router/axios';
@@ -49,18 +39,9 @@ import '@vue-office/docx/lib/index.css';
 import '@vue-office/excel/lib/index.css';
 
 export default {
+  name: 'FilePreview',
   props: {
-    title: {
-      type: String,
-      default: '文件预览'
-    },
-    width: String,
-    fileUrl: {
-      type: String
-    },
-    visible: {
-      type: Boolean
-    }
+    fileUrl: String
   },
   components: {
     VueOfficeDocx,
@@ -86,18 +67,8 @@ export default {
       return this.getMainHeight();
     }
   },
-  watch: {
-    fileUrl(url) {
-      if (!!url) {
-        // 验证支持的文件格式
-        if (!this.fileExtCheck(this.ext)) {
-          this.$message.error('不支持的文件格式');
-          this.reset();
-          return;
-        }
-        this.downloadFile();
-      }
-    }
+  mounted() {
+    this.downloadFile();
   },
   methods: {
     rendered() {
@@ -112,6 +83,12 @@ export default {
       return exts.includes(this.ext);
     },
     async downloadFile() {
+      // 验证支持的文件格式
+      if (!this.fileExtCheck(this.ext)) {
+        this.$message.error('不支持的文件格式');
+        this.reset();
+        return;
+      }
       const r = await request({
         url: this.fileUrl,
         method: 'get',
