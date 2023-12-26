@@ -21,12 +21,12 @@
           :icon="btn.icon"
           type="text"
           size="mini"
-          @click="btn.handler($event, row)"
+          @click="btn.handler(row)"
         >
           {{ btn.label }}
         </el-button>
       </span>
-      <span v-else :style="colOpts.style">
+      <span v-else :style="generateColStyle(colOpts, row)">
         {{
           !colOpts.formatter
             ? row[colOpts.field]
@@ -92,7 +92,18 @@
 <script>
 export default {
   name: 'TableColItem',
-  props: ['colOpts']
+  props: ['colOpts'],
+  methods: {
+    generateColStyle(colOpts = {}, row) {
+      if (colOpts.style) {
+        if (typeof colOpts.style === 'function') {
+          return colOpts.style(row[colOpts.field], row);
+        } else {
+          return colOpts.style;
+        }
+      }
+    }
+  }
 };
 </script>
 

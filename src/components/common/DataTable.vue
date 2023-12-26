@@ -6,7 +6,7 @@
       :data="optionsLatest.data"
       :max-height="
         tableHeight -
-          (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
+        (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
       "
       :default-sort="optionsLatest.sort"
       stripe
@@ -130,14 +130,14 @@
                 >
                   {{
                     btn.label ||
-                      (!col.formatter
-                        ? row[col.field]
-                        : col.formatter(row[col.field]))
+                    (!col.formatter
+                      ? row[col.field]
+                      : col.formatter(row[col.field]))
                   }}
                 </el-button>
               </el-tooltip>
             </span>
-            <span v-else :style="col.style">
+            <span v-else :style="generateColStyle(colOpts, row)">
               {{
                 !col.formatter
                   ? row[col.field]
@@ -229,6 +229,15 @@ export default {
     }
   },
   methods: {
+    generateColStyle(colOpts = {}, row) {
+      if (colOpts.style) {
+        if (typeof colOpts.style === 'function') {
+          return colOpts.style(row[colOpts.field], row);
+        } else {
+          return colOpts.style;
+        }
+      }
+    },
     changePage(page) {
       this.current = page;
       this.changePagination();
