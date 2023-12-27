@@ -137,7 +137,7 @@
                 </el-button>
               </el-tooltip>
             </span>
-            <span v-else :style="generateColStyle(colOpts, row)">
+            <span v-else :style="generateColStyle(col, row)">
               {{
                 !col.formatter
                   ? row[col.field]
