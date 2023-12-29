@@ -101,6 +101,9 @@ export default {
 
       if (this.suffix.image.includes(this.ext)) {
         this.src = URL.createObjectURL(blob);
+        setTimeout(() => {
+          URL.revokeObjectURL(this.src);
+        });
       } else {
         this.src = blob;
       }
