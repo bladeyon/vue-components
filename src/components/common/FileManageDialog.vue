@@ -123,9 +123,9 @@ export default {
     };
   },
   watch: {
-    'option.parentId': {
-      handler(id) {
-        id && this.getFileList();
+    visible: {
+      handler(state) {
+        state && this.getFileList();
       }
     }
   },
