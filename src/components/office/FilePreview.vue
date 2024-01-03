@@ -1,25 +1,25 @@
 <template>
   <div style="height: 100%">
     <VueOfficeDocx
-      v-if="suffix.doc.includes(ext)"
+      v-if="suffix.doc.includes(ext) && src"
       :src="src"
       style="height: 100%"
       @rendered="rendered"
     />
     <VueOfficeExcel
-      v-if="suffix.excel.includes(ext)"
+      v-if="suffix.excel.includes(ext) && src"
       :src="src"
       style="height: 100%"
       @rendered="rendered"
     />
     <VueOfficePdf
-      v-if="suffix.pdf.includes(ext)"
+      v-if="suffix.pdf.includes(ext) && src"
       :src="src"
       style="height: 100%"
       @rendered="rendered"
     />
     <el-image
-      v-if="suffix.image.includes(ext)"
+      v-if="suffix.image.includes(ext) && src"
       style="width: 100%; height: 100%"
       :src="src"
       fit="contain"
@@ -74,10 +74,6 @@ export default {
     rendered() {
       // console.log('渲染完成');
     },
-    reset() {
-      this.$emit('update:visible', false);
-      this.src = null;
-    },
     fileExtCheck(ext) {
       const exts = Object.values(this.suffix).flat(Infinity);
       return exts.includes(this.ext);
@@ -101,11 +97,13 @@ export default {
 
       if (this.suffix.image.includes(this.ext)) {
         this.src = URL.createObjectURL(blob);
-        setTimeout(() => {
-          URL.revokeObjectURL(this.src);
-        });
       } else {
         this.src = blob;
+      }
+    },
+    revokeURL() {
+      if (this.src.includes('blob:')) {
+        URL.revokeObjectURL(this.src);
       }
     }
   }
