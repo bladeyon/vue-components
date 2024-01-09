@@ -15,16 +15,29 @@
   >
     <template slot-scope="{ row }">
       <span v-if="colOpts.OperateBtn">
-        <el-button
-          v-for="btn in colOpts.OperateBtn"
-          :key="btn.label"
-          :icon="btn.icon"
-          type="text"
-          size="mini"
-          @click="btn.handler(row)"
+        <el-tooltip
+          v-for="(btn, index) in colOpts.OperateBtn"
+          :key="'btn_' + index"
+          :disabled="!btn.tips"
+          :content="btn.tips"
+          placement="top"
+          effect="dark"
         >
-          {{ btn.label }}
-        </el-button>
+          <el-button
+            v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
+            :icon="btn.icon"
+            type="text"
+            size="mini"
+            @click="btn.handler(row)"
+          >
+            {{
+              btn.label ||
+              (!colOpts.formatter
+                ? row[colOpts.field]
+                : colOpts.formatter(row[colOpts.field]))
+            }}
+          </el-button>
+        </el-tooltip>
       </span>
       <span v-else :style="generateColStyle(colOpts, row)">
         {{
