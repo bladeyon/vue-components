@@ -2,6 +2,7 @@
   <el-form
     ref="queryForm"
     class="query-form"
+    :key="formKey"
     :inline="true"
     :model="form"
     :label-width="query?.labelWidth ?? '80px'"
@@ -103,6 +104,7 @@
 </template>
 
 <script>
+import { randomLenNum } from '@/util';
 export default {
   props: {
     query: {
@@ -110,14 +112,16 @@ export default {
       default() {
         return {
           form: [],
-          btns: []
+          btns: [],
+          params: {} // 固定参数
         };
       }
     }
   },
   data() {
     return {
-      form: {}
+      form: {},
+      formKey: randomLenNum()
     };
   },
   computed: {
@@ -138,9 +142,10 @@ export default {
     }
   },
   watch: {
-    'query.form': {
+    query: {
       handler(newVal) {
-        newVal?.forEach((f) => {
+        this.formKey = randomLenNum();
+        newVal.form?.forEach((f) => {
           this.$set(this.form, f.field, f.default || '');
         });
       },
@@ -152,7 +157,9 @@ export default {
   methods: {
     handleBtnClk(eType) {
       // 事件类型是 搜索时，需要传递form中表单的值；其他情况传{}
-      this.$emit(eType, eType === 'search' ? this.form : {});
+      const data = {};
+      Object.assign(data, this.query.params, this.form);
+      this.$emit(eType, eType === 'search' ? data : {});
     },
     handlerMulSelect(e, field, options) {
       if (e) {
