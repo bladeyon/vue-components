@@ -282,6 +282,7 @@ export default {
 >>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
 =======
 .data-table ::v-deep {
+<<<<<<< HEAD
   .el-table__row {
     .el-table__cell {
       .el-button.el-button--text {
@@ -304,6 +305,8 @@ export default {
   }
 
 >>>>>>> 8dc9c8dd (表格公共组件增加嵌套子表格功能；设定常用的行间按钮样式)
+=======
+>>>>>>> 164c7064 (style: 表格中操作列的按钮统一设置样式)
   & > .el-pagination {
     text-align: right;
   }
