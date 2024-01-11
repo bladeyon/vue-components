@@ -8,13 +8,13 @@
     :label-width="query?.labelWidth ?? '80px'"
   >
     <!-- size="small" -->
-    <template v-if="isShowFormItem">
+    <template>
       <el-form-item
         class="form-item"
         v-for="item in query.form"
         :key="item.field"
         :label="item.label"
-        :label-width="item.labelWidth ?? '80px'"
+        :label-width="item.labelWidth ?? query.labelWidth ?? '80px'"
       >
         <el-input
           v-if="!item.component || item.component === 'input'"
@@ -88,7 +88,7 @@
         </el-radio-group>
       </el-form-item>
     </template>
-    <el-form-item class="form-item" v-if="isShowQueryBtn">
+    <el-form-item class="form-item">
       <el-button
         v-for="btn in query.btns"
         v-show="btn.isShow ?? true"
@@ -109,6 +109,7 @@ export default {
   props: {
     query: {
       type: Object,
+      required: true,
       default() {
         return {
           form: [],
@@ -125,12 +126,6 @@ export default {
     };
   },
   computed: {
-    isShowFormItem() {
-      return this.query.form?.length > 0;
-    },
-    isShowQueryBtn() {
-      return this.query.btns?.length > 0;
-    },
     mulSelectStatus() {
       return (field, options) => {
         let status = false;
