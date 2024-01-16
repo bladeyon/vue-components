@@ -95,14 +95,14 @@ export default {
         responseType: 'arraybuffer'
       });
 
-      if (this.suffix.image.includes(this.ext)) {
+      if (this.suffix.image?.includes(this.ext)) {
         this.src = URL.createObjectURL(blob);
       } else {
         this.src = blob;
       }
     },
     revokeURL() {
-      if (this.src.includes('blob:')) {
+      if (typeof(this.src) === 'string' && this.src.includes('blob:')) {
         URL.revokeObjectURL(this.src);
       }
     }
