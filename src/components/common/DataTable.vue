@@ -310,5 +310,11 @@ export default {
   & > .el-pagination {
     text-align: right;
   }
+
+  .el-table {
+    .is-center .cell .el-checkbox {
+      margin: 0;
+    }
+  }
 }
 </style>
