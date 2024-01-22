@@ -141,7 +141,18 @@ export default {
       handler(newVal) {
         this.formKey = randomLenNum();
         newVal.form?.forEach((f) => {
-          this.$set(this.form, f.field, f.default || '');
+          let defVal = '';
+          if (f.default !== undefined) {
+            defVal = f.default;
+            if (
+              f.component === 'select' &&
+              f.default.indexOf('options') > -1
+            ) {
+              const idx = f.default.match(/\[(\d+)\]/)[1];
+              defVal = f.componentProps.options[idx].value;
+            }
+          }
+          this.$set(this.form, f.field, defVal);
         });
       },
       deep: true,
