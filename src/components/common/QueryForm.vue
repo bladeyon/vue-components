@@ -23,7 +23,8 @@
         <el-select
           v-else-if="item.component === 'select'"
           v-model="form[item.field]"
-          filterable
+          :filterable="item.componentProps?.filterable ?? true"
+          :clearable="item.componentProps?.clearable ?? true"
           collapse-tags
           :style="item.style"
           :multiple="item.multiple ?? false"
@@ -144,10 +145,7 @@ export default {
           let defVal = '';
           if (f.default !== undefined) {
             defVal = f.default;
-            if (
-              f.component === 'select' &&
-              f.default.indexOf('options') > -1
-            ) {
+            if (f.component === 'select' && f.default.indexOf('options') > -1) {
               const idx = f.default.match(/\[(\d+)\]/)[1];
               defVal = f.componentProps.options[idx].value;
             }
