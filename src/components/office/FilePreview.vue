@@ -1,31 +1,34 @@
 <template>
   <div style="height: 100%">
-    <VueOfficeDocx
-      v-if="suffix.doc.includes(ext) && src"
-      :src="src"
-      style="height: 100%"
-      @rendered="rendered"
-    />
-    <VueOfficeExcel
-      v-if="suffix.excel.includes(ext) && src"
-      :src="src"
-      style="height: 100%"
-      @rendered="rendered"
-    />
-    <VueOfficePdf
-      v-if="suffix.pdf.includes(ext) && src"
-      :src="src"
-      style="height: 100%"
-      @rendered="rendered"
-    />
-    <el-image
-      v-if="suffix.image.includes(ext) && src"
-      style="width: 100%; height: 100%"
-      :src="src"
-      fit="contain"
-      lazy
-    >
-    </el-image>
+    <div v-if="!src" style="text-align: center">正在加载，请稍等...</div>
+    <template v-else>
+      <VueOfficeDocx
+        v-if="suffix.doc.includes(ext)"
+        :src="src"
+        style="height: 100%"
+        @rendered="rendered"
+      />
+      <VueOfficeExcel
+        v-else-if="suffix.excel.includes(ext)"
+        :src="src"
+        style="height: 100%"
+        @rendered="rendered"
+      />
+      <VueOfficePdf
+        v-else-if="suffix.pdf.includes(ext)"
+        :src="src"
+        style="height: 100%"
+        @rendered="rendered"
+      />
+      <el-image
+        v-else
+        style="width: 100%; height: 100%"
+        :src="src"
+        fit="contain"
+        lazy
+      >
+      </el-image>
+    </template>
   </div>
 </template>
 <script>
@@ -61,7 +64,7 @@ export default {
   },
   computed: {
     ext() {
-      return this.fileUrl.split('.').pop().toLowerCase();
+      return this.fileUrl.match(/(?<=\.)\w+/)?.[0].toLowerCase();
     },
     height() {
       return this.getMainHeight();
@@ -79,8 +82,8 @@ export default {
       return exts.includes(this.ext);
     },
     async downloadFile() {
-      // 验证支持的文件格式
-      if (!this.fileExtCheck(this.ext)) {
+      // 验证支持的文件格式 没有后缀的不需要验证
+      if (this.ext && !this.fileExtCheck(this.ext)) {
         this.$message.error('不支持的文件格式');
         this.reset();
         return;
@@ -94,18 +97,18 @@ export default {
         type: 'octet-stream',
         responseType: 'arraybuffer'
       });
-
-      if (this.suffix.image?.includes(this.ext)) {
-        this.src = URL.createObjectURL(blob);
-      } else {
+      if (this.ext && !this.suffix.image.includes(this.ext)) {
         this.src = blob;
+      } else {
+        this.src = URL.createObjectURL(blob);
       }
     },
     revokeURL() {
-      if (typeof(this.src) === 'string' && this.src.includes('blob:')) {
+      if (typeof this.src === 'string' && this.src.includes('blob:')) {
         URL.revokeObjectURL(this.src);
       }
     }
   }
 };
 </script>
+<style scoped></style>
