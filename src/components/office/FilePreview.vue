@@ -64,7 +64,7 @@ export default {
   },
   computed: {
     ext() {
-      return this.fileUrl.match(/(?<=\.)\w+/)?.[0].toLowerCase();
+      return this.fileUrl.match(/(?<=\.)\w+$/)?.[0].toLowerCase();
     },
     height() {
       return this.getMainHeight();
