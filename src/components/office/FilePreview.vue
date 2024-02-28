@@ -93,12 +93,19 @@ export default {
         method: 'get',
         responseType: 'blob'
       });
-      const blob = new Blob([r.data], {
-        type: 'octet-stream',
-        responseType: 'arraybuffer'
-      });
+      // const blob = new Blob([r.data], {
+      //   type: 'octet-stream',
+      //   responseType: 'arraybuffer'
+      // });
+      const blob = new Blob([r.data], { type: 'application/force-download; charset=UTF-8' });
       if (this.ext && !this.suffix.image.includes(this.ext)) {
-        this.src = blob;
+        // this.src = blob;
+        let reader = new FileReader();
+        reader.readAsArrayBuffer(blob);
+        reader.onload = (loadEvent) => {
+          let arrayBuffer = loadEvent.target.result;
+          this.src = arrayBuffer
+        }
       } else {
         this.src = URL.createObjectURL(blob);
       }
