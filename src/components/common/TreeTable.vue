@@ -8,7 +8,7 @@
     stripe
     fit
     highlight-current-row
-    :lazy="tableConfig.isLazy"
+    :lazy="tableConfig.isLazy ?? false"
     :load="load"
     :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
   >
@@ -75,7 +75,9 @@ export default {
 
       // 默认都有子节点
       data.forEach((d) =>
-        Object.assign(d, { children: [], hasChildren: true })
+        Object.assign(d, {
+          hasChildren: d.children?.length ? false : true
+        })
       );
       return data;
     },
