@@ -179,8 +179,8 @@ export default {
 <style lang="scss" scoped>
 .query-form {
   .form-item {
-    margin-right: 20px;
-    margin-bottom: 10px;
+    margin: 5px 20px;
+    margin-left: 0;
   }
 }
 </style>
