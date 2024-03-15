@@ -11,7 +11,7 @@
       :default-sort="optionsLatest.sort"
       stripe
       fit
-      highlight-current-row
+      :highlight-current-row="optionsLatest.option.highlightCurrentRow"
       :style="{ width: '100%', fontSize: optionsLatest.fontSize }"
       @cell-click="cellClick"
       :cell-style="optionsLatest.cellStyle"
@@ -210,7 +210,8 @@ export default {
         fontSize: '12px',
         option: {
           rowNum: false,
-          multiSelect: false
+          multiSelect: false,
+          highlightCurrentRow: false
         },
         data: [], // 数据
         cols: [],
