@@ -1,100 +1,94 @@
 <template>
   <el-form
     ref="queryForm"
-    class="query-form"
     :key="formKey"
+    class="query-form"
     :inline="true"
     :model="form"
     :label-width="query?.labelWidth ?? '80px'"
   >
     <!-- size="small" -->
-    <template>
-      <el-form-item
-        class="form-item"
-        v-for="item in query.form"
-        :key="item.field"
-        :label="item.label"
-        :label-width="item.labelWidth ?? query.labelWidth ?? '80px'"
+    <el-form-item
+      v-for="item in query.form"
+      :key="item.field"
+      class="form-item"
+      :label="item.label"
+      :label-width="item.labelWidth ?? query.labelWidth ?? '80px'"
+    >
+      <el-input
+        v-if="!item.component || item.component === 'input'"
+        v-model="form[item.field]"
+      />
+      <el-select
+        v-else-if="item.component === 'select'"
+        v-model="form[item.field]"
+        :filterable="item.componentProps?.filterable ?? true"
+        :clearable="item.componentProps?.clearable ?? true"
+        collapse-tags
+        :style="item.style"
+        :multiple="item.multiple ?? false"
       >
-        <el-input
-          v-if="!item.component || item.component === 'input'"
-          v-model="form[item.field]"
-        />
-        <el-select
-          v-else-if="item.component === 'select'"
-          v-model="form[item.field]"
-          :filterable="item.componentProps?.filterable ?? true"
-          :clearable="item.componentProps?.clearable ?? true"
-          collapse-tags
-          :style="item.style"
-          :multiple="item.multiple ?? false"
+        <span
+          v-if="item.multiple && item.componentProps.checkbox"
+          style="line-height: 34px; padding: 0 20px"
         >
-          <span
-            v-if="item.multiple && item.componentProps.checkbox"
-            style="line-height: 34px; padding: 0 20px"
-          >
-            <el-checkbox
-              label="全选"
-              :indeterminate="false"
-              :value="mulSelectStatus(item.field, item.componentProps.options)"
-              @change="
-                handlerMulSelect(
-                  $event,
-                  item.field,
-                  item.componentProps.options
-                )
-              "
-            />
-          </span>
-          <el-option
-            v-for="opt in item.componentProps.options"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
+          <el-checkbox
+            label="全选"
+            :indeterminate="false"
+            :value="mulSelectStatus(item.field, item.componentProps.options)"
+            @change="
+              handlerMulSelect($event, item.field, item.componentProps.options)
+            "
           />
-        </el-select>
-        <el-date-picker
-          v-else-if="item.component === 'datepicker'"
-          v-model="form[item.field]"
-          :type="item.componentProps?.type ?? 'date'"
-          :default-value="item.default"
-          :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
-          size="small"
-          :placeholder="item.componentProps?.placeholder"
+        </span>
+        <el-option
+          v-for="opt in item.componentProps.options"
+          :key="opt.value"
+          :label="opt.label"
+          :value="opt.value"
         />
-        <!-- prettier-ignore -->
-        <el-date-picker
-          v-else-if="item.component === 'daterange'"
-          v-model="form[item.field]"
-          :type="item.componentProps?.type ?? 'daterange'"
-          :default-value="item.default"
-          :range-separator="item.componentProps?.separator ?? '-'"
-          :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
-          size="small"
-          :start-placeholder="item.componentProps?.startPlaceholder ?? '开始时间'"
-          :end-placeholder="item.componentProps?.endPlaceholder ?? '结束时间'"
-        />
+      </el-select>
+      <el-date-picker
+        v-else-if="item.component === 'datepicker'"
+        v-model="form[item.field]"
+        :type="item.componentProps?.type ?? 'date'"
+        :default-value="item.default"
+        :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
+        size="small"
+        :placeholder="item.componentProps?.placeholder"
+      />
+      <!-- prettier-ignore -->
+      <el-date-picker
+        v-else-if="item.component === 'daterange'"
+        v-model="form[item.field]"
+        :type="item.componentProps?.type ?? 'daterange'"
+        :default-value="item.default"
+        :range-separator="item.componentProps?.separator ?? '-'"
+        :value-format="item.componentProps?.valueFormat ?? 'yyyy-MM-dd'"
+        size="small"
+        :start-placeholder="item.componentProps?.startPlaceholder ?? '开始时间'"
+        :end-placeholder="item.componentProps?.endPlaceholder ?? '结束时间'"
+      />
 
-        <el-radio-group
-          v-else-if="item.component === 'radioGroup'"
-          v-model="form[item.field]"
+      <el-radio-group
+        v-else-if="item.component === 'radioGroup'"
+        v-model="form[item.field]"
+      >
+        <el-radio
+          v-for="opt in item.componentProps.options"
+          :key="opt.value"
+          :label="opt.value"
         >
-          <el-radio
-            v-for="opt in item.componentProps.options"
-            :key="opt.value"
-            :label="opt.value"
-          >
-            {{ opt.label }}
-          </el-radio>
-        </el-radio-group>
-      </el-form-item>
-    </template>
+          {{ opt.label }}
+        </el-radio>
+      </el-radio-group>
+    </el-form-item>
     <el-form-item class="form-item">
       <el-button
         v-for="btn in query.btns"
         v-show="btn.isShow ?? true"
-        :icon="btn.icon"
         :key="btn.text"
+        :icon="btn.icon"
         :type="btn.type ?? 'primary'"
         @click="handleBtnClk(btn.event)"
       >
@@ -141,17 +135,7 @@ export default {
     query: {
       handler(newVal) {
         this.formKey = randomLenNum();
-        newVal.form?.forEach((f) => {
-          let defVal = '';
-          if (f.default !== undefined) {
-            defVal = f.default;
-            if (f.component === 'select' && f.default.indexOf('options') > -1) {
-              const idx = f.default.match(/\[(\d+)\]/)[1];
-              defVal = f.componentProps.options[idx].value;
-            }
-          }
-          this.$set(this.form, f.field, defVal);
-        });
+        this.generateForm(newVal.form);
       },
       deep: true,
       immediate: true
@@ -159,6 +143,22 @@ export default {
   },
   created() {},
   methods: {
+    reset() {
+      this.generateForm(this.query.form);
+    },
+    generateForm(form) {
+      form?.forEach((f) => {
+        let defVal = '';
+        if (f.default !== undefined) {
+          defVal = f.default;
+          if (f.component === 'select' && f.default.indexOf('options') > -1) {
+            const idx = f.default.match(/\[(\d+)\]/)[1];
+            defVal = f.componentProps.options[idx].value;
+          }
+        }
+        this.$set(this.form, f.field, defVal);
+      });
+    },
     handleBtnClk(eType) {
       // 事件类型是 搜索时，需要传递form中表单的值；其他情况传{}
       const data = {};
