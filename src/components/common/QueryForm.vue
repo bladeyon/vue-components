@@ -153,7 +153,7 @@ export default {
           defVal = f.default;
           if (f.component === 'select' && f.default.indexOf('options') > -1) {
             const idx = f.default.match(/\[(\d+)\]/)[1];
-            defVal = f.componentProps.options[idx].value;
+            defVal = f.componentProps.options?.[idx]?.value;
           }
         }
         this.$set(this.form, f.field, defVal);
@@ -177,10 +177,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.query-form {
+.query-form ::v-deep {
   .form-item {
     margin: 5px 20px;
     margin-left: 0;
+
+    .el-input {
+      width: 180px;
+    }
   }
 }
 </style>
