@@ -148,10 +148,10 @@ export default {
     },
     generateForm(form) {
       form?.forEach((f) => {
-        let defVal = '';
-        if (f.default !== undefined) {
+        let defVal = null;
+        if (f.default != null) {
           defVal = f.default;
-          if (f.component === 'select' && f.default.indexOf('options') > -1) {
+          if (f.component === 'select' && f.default.indexOf?.('options') > -1) {
             const idx = f.default.match(/\[(\d+)\]/)[1];
             defVal = f.componentProps.options?.[idx]?.value;
           }
