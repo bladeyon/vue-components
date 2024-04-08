@@ -17,97 +17,103 @@
       :inline="true"
       label-width="180px"
     >
-      <el-form-item
-        v-for="item in formItems"
-        :key="item.field"
-        class="form-item"
-        :label="item.label"
-        :prop="item.field"
-        :style="{ width: item.component === 'textarea' ? '90%' : '45%' }"
-      >
-        <el-input
-          v-if="!item.component || item.component === 'input'"
-          v-model="dataForm[item.field]"
-          :type="item.componentProps?.type || 'text'"
-          :readonly="item.componentProps?.readonly || false"
-          @change="(value) => handleFormItemChange(value, item)"
+      <template v-for="item in formItems">
+        <el-form-item
+          v-show="item.canEdit ?? true"
+          :key="item.field"
+          class="form-item"
+          :label="item.label"
+          :prop="item.field"
+          :style="item | setStyle"
         >
-        </el-input>
-        <el-input
-          v-else-if="item.component === 'textarea'"
-          v-model="dataForm[item.field]"
-          type="textarea"
-          :rows="item.componentProps?.rows || 3"
-          style="width: 100%"
-        >
-        </el-input>
-        <el-select
-          v-else-if="item.component === 'select'"
-          v-model="dataForm[item.field]"
-          filterable
-          collapse-tags
-          :multiple="item.componentProps?.multiple"
-        >
-          <span
-            v-if="item.componentProps?.multiple"
-            style="line-height: 34px; padding: 0 20px"
+          <el-input
+            v-if="!item.component || item.component === 'input'"
+            v-model="dataForm[item.field]"
+            :type="item | setType"
+            :readonly="item.componentProps?.readonly || false"
+            @change="(value) => handleFormItemEvent(value, item, 'change')"
           >
-            <el-checkbox
-              label="全选"
-              :indeterminate="false"
-              :value="mulSelectStatus(item.field, item.componentProps?.options)"
-              @change="
-                handlerMulSelect(
-                  $event,
-                  item.field,
-                  item.componentProps?.options
-                )
-              "
-            ></el-checkbox>
-          </span>
-          <el-option
-            v-for="opt in item.componentProps?.options"
-            :key="opt.value"
-            :label="opt.label"
-            :value="opt.value"
-          ></el-option>
-        </el-select>
-        <el-date-picker
-          v-else-if="item.component === 'datepicker'"
-          v-model="dataForm[item.field]"
-          :type="item.componentProps?.type || 'date'"
-          :default-value="item.default"
-          :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
-          :format="item.componentProps?.format || 'yyyy-MM-dd'"
-          size="small"
-          :placeholder="item.componentProps?.placeholder"
-        >
-        </el-date-picker>
-
-        <el-radio-group
-          v-else-if="item.component === 'radioGroup'"
-          v-model="dataForm[item.field]"
-        >
-          <el-radio
-            v-for="opt in item.componentProps?.options"
-            :key="opt.value"
-            :label="opt.value"
+          </el-input>
+          <el-input
+            v-else-if="item.component === 'textarea'"
+            v-model="dataForm[item.field]"
+            type="textarea"
+            :rows="item.componentProps?.rows || 3"
           >
-            {{ opt.label }}
-          </el-radio>
-        </el-radio-group>
+          </el-input>
+          <el-select
+            v-else-if="item.component === 'select'"
+            v-model="dataForm[item.field]"
+            filterable
+            collapse-tags
+            :multiple="item.componentProps?.multiple"
+            :allow-create="item.componentProps?.allowCreate"
+            @change="(value) => handleFormItemEvent(value, item, 'change')"
+          >
+            <span
+              v-if="item.componentProps?.multiple"
+              style="line-height: 34px; padding: 0 20px"
+            >
+              <el-checkbox
+                label="全选"
+                :indeterminate="false"
+                :value="
+                  mulSelectStatus(item.field, item.componentProps?.options)
+                "
+                @change="
+                  handlerMulSelect(
+                    $event,
+                    item.field,
+                    item.componentProps?.options
+                  )
+                "
+              ></el-checkbox>
+            </span>
+            <el-option
+              v-for="opt in item.componentProps?.options"
+              :key="opt.value"
+              :label="opt.label"
+              :value="opt.value"
+            ></el-option>
+          </el-select>
+          <el-date-picker
+            v-else-if="item.component === 'datepicker'"
+            v-model="dataForm[item.field]"
+            :type="item | setType"
+            :default-value="item.default"
+            :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
+            :format="item.componentProps?.format || 'yyyy-MM-dd'"
+            size="small"
+            :placeholder="item.componentProps?.placeholder"
+          >
+          </el-date-picker>
 
-        <el-cascader
-          v-else-if="item.component === 'cascader'"
-          v-model="dataForm[item.field]"
-          :options="item.componentProps?.options"
-          clearable
-          filterable
-          :show-all-levels="item.componentProps?.showAllLevels ?? true"
-          :props="item.componentProps?.props"
-        >
-        </el-cascader>
-      </el-form-item>
+          <el-radio-group
+            v-else-if="item.component === 'radioGroup'"
+            v-model="dataForm[item.field]"
+            @input="(value) => handleFormItemEvent(value, item, 'input')"
+          >
+            <el-radio
+              v-for="opt in item.componentProps?.options"
+              :key="opt.value"
+              :label="opt.value"
+            >
+              {{ opt.label }}
+            </el-radio>
+          </el-radio-group>
+
+          <el-cascader
+            v-else-if="item.component === 'cascader'"
+            v-model="dataForm[item.field]"
+            :options="item.componentProps?.options"
+            clearable
+            filterable
+            :show-all-levels="item.componentProps?.showAllLevels ?? true"
+            :props="item.componentProps?.props"
+          >
+          </el-cascader>
+        </el-form-item>
+      </template>
     </el-form>
     <span slot="footer" class="dialog-footer">
       <el-button @click="reset">取 消</el-button>
@@ -119,8 +125,30 @@
 <script>
 import { cloneDeep } from 'lodash';
 
+const componentDefCfg = {
+  textarea: {
+    type: 'textarea'
+  },
+  datepicker: {
+    type: 'date'
+  }
+};
+
 export default {
   name: 'FormModelDialog',
+  filters: {
+    setStyle(item) {
+      return (
+        item.style ?? { width: item.component === 'textarea' ? '90%' : '45%' }
+      );
+    },
+    setType(item) {
+      return (
+        item.componentProps?.type ??
+        (componentDefCfg[item.component]?.type || 'text')
+      );
+    }
+  },
   props: {
     visible: Boolean,
     formData: {
@@ -191,21 +219,12 @@ export default {
         if (value) {
           this.formKey = Math.random().toString(16).slice(2, 10);
           this.dataForm = cloneDeep(this.formData);
+          this.formItems = [];
+          this.generateFormItems(this.fieldItems);
+          this.setDefaultValue();
+          this.rules = {};
+          this.generateFormRules(this.formRules);
         }
-      }
-    },
-    formRules: {
-      deep: true,
-      handler(value) {
-        this.rules = {};
-        this.generateFormRules(value);
-      }
-    },
-    fieldItems: {
-      deep: true,
-      handler(value) {
-        this.formItems = [];
-        this.generateFormItems(this.formData, value);
       }
     }
   },
@@ -217,10 +236,15 @@ export default {
         this.dataForm[field] = [];
       }
     },
-    handleFormItemChange(value, cfg) {
-      const change = cfg.componentProps?.change;
-      if (typeof change === 'function') {
-        cfg.componentProps.change(value, cfg.field, this.dataForm);
+    handleFormItemEvent(value, cfg, eventType) {
+      const eventFn = cfg.componentProps?.[eventType];
+      if (typeof eventFn === 'function') {
+        cfg.componentProps?.[eventType](
+          value,
+          cfg.field,
+          this.dataForm,
+          this.formItems
+        );
       }
     },
     generateFormRules(source = {}) {
@@ -240,28 +264,36 @@ export default {
         }
       }
     },
-    generateFormItems(form, cols, parent) {
-      const columns = cloneDeep(cols);
-      // const items = [];
+    generateFormItems(columns, parent) {
       for (let index = 0; index < columns.length; index++) {
         const it = columns[index];
-
-        if (it.canEdit === false) {
-          continue;
+        if (it.children?.length) {
+          this.generateFormItems(it.children, it);
         } else {
-          if (it.children?.length) {
-            this.generateFormItems(form, it.children, it);
-          } else {
-            if (parent) {
-              it.label = `${parent.label}${it.label}`;
-            }
-            // 默认值
-            this.dataForm[it.field] = form[it.field] ?? it.default;
-            this.formItems.push(it);
+          if (parent) {
+            it.label = `${parent.label}${it.label}`;
           }
+
+          this.formItems.push(it);
         }
       }
-      // return items;
+    },
+    setDefaultValue() {
+      for (let idx = 0; idx < this.formItems.length; idx++) {
+        const it = this.formItems[idx];
+        if (this.dataForm[it.field] != null) {
+          continue;
+        } else if (it.default != null) {
+          // 默认值
+          let defVal = null;
+          if (typeof it.default === 'function') {
+            defVal = it.default(it, this.dataForm, this.formItems);
+          } else {
+            defVal = it.default;
+          }
+          this.dataForm[it.field] = defVal;
+        }
+      }
     },
     async submit() {
       delete this.dataForm?.randomKey;
