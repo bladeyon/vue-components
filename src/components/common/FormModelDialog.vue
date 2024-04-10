@@ -132,6 +132,7 @@
           <el-upload
             v-else-if="item.component === 'upload'"
             :ref="'upload' + item.field"
+            name=""
             :action="item.componentProps?.action ?? ''"
             :http-request="item.componentProps?.httpRequest"
             :auto-upload="item.componentProps?.autoUpload ?? true"
@@ -145,6 +146,7 @@
                 onSuccess(response, file, fileList, item)
             "
             :show-file-list="item.componentProps?.showFileList"
+            :file-list="dataForm['fileList_' + item.field]"
             :accept="item.componentProps?.accept"
           >
             <el-button slot="trigger" size="small" type="primary">
@@ -339,6 +341,10 @@ export default {
     setDefaultValue() {
       for (let idx = 0; idx < this.formItems.length; idx++) {
         const it = this.formItems[idx];
+        if (it.component === 'upload') {
+          this.dataForm['fileList_' + it.field] =
+            it.componentProps?.getFileList(this.dataForm);
+        }
         if (this.dataForm[it.field] != null) {
           continue;
         } else {
