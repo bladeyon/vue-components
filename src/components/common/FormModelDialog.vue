@@ -31,7 +31,16 @@
             v-model="dataForm[item.field]"
             :type="item | setType"
             :readonly="item.componentProps?.readonly || false"
-            @change="(value) => handleFormItemEvent(value, item, 'change')"
+            @input="
+              (value) => {
+                handleFormItemEvent(value, item, 'input');
+              }
+            "
+            @change="
+              (value) => {
+                handleFormItemEvent(value, item, 'change');
+              }
+            "
           >
           </el-input>
           <el-input
@@ -48,7 +57,11 @@
             collapse-tags
             :multiple="item.componentProps?.multiple"
             :allow-create="item.componentProps?.allowCreate"
-            @change="(value) => handleFormItemEvent(value, item, 'change')"
+            @change="
+              (value) => {
+                handleFormItemEvent(value, item, 'change');
+              }
+            "
           >
             <span
               v-if="item.componentProps?.multiple"
@@ -91,7 +104,11 @@
           <el-radio-group
             v-else-if="item.component === 'radioGroup'"
             v-model="dataForm[item.field]"
-            @input="(value) => handleFormItemEvent(value, item, 'input')"
+            @input="
+              (value) => {
+                handleFormItemEvent(value, item, 'input');
+              }
+            "
           >
             <el-radio
               v-for="opt in item.componentProps?.options"
@@ -112,6 +129,40 @@
             :props="item.componentProps?.props"
           >
           </el-cascader>
+          <el-upload
+            v-else-if="item.component === 'upload'"
+            :ref="'upload' + item.field"
+            :action="item.componentProps?.action ?? ''"
+            :http-request="item.componentProps?.httpRequest"
+            :auto-upload="item.componentProps?.autoUpload ?? true"
+            :multiple="item.componentProps?.multiple"
+            :limit="item.componentProps?.limit"
+            :on-remove="item.componentProps?.onRemove"
+            :on-exceed="(files, fileList) => onExceed(files, fileList, item)"
+            :on-change="(file, fileList) => onChange(file, fileList, item)"
+            :on-success="
+              (response, file, fileList) =>
+                onSuccess(response, file, fileList, item)
+            "
+            :show-file-list="item.componentProps?.showFileList"
+            :accept="item.componentProps?.accept"
+          >
+            <el-button slot="trigger" size="small" type="primary">
+              选择文件
+            </el-button>
+            <el-button
+              v-show="item.componentProps?.autoUpload === false"
+              style="margin-left: 10px"
+              size="small"
+              type="success"
+              @click="submitUpload('upload' + item.field)"
+            >
+              上传到服务器
+            </el-button>
+            <div slot="tip" class="el-upload__tip">
+              {{ item.componentProps?.tip }}
+            </div>
+          </el-upload>
         </el-form-item>
       </template>
     </el-form>
@@ -218,9 +269,14 @@ export default {
       handler(value) {
         if (value) {
           this.formKey = Math.random().toString(16).slice(2, 10);
+          for (const key in this.formData) {
+            if (Object.hasOwnProperty.call(this.formData, key)) {
+              this.$set(this.dataForm, key, this.formData[key]);
+            }
+          }
           this.dataForm = cloneDeep(this.formData);
           this.formItems = [];
-          this.generateFormItems(this.fieldItems);
+          this.generateFormItems(cloneDeep(this.fieldItems));
           this.setDefaultValue();
           this.rules = {};
           this.generateFormRules(this.formRules);
@@ -267,13 +323,15 @@ export default {
     generateFormItems(columns, parent) {
       for (let index = 0; index < columns.length; index++) {
         const it = columns[index];
+        if (it.canEdit === false) {
+          continue;
+        }
         if (it.children?.length) {
           this.generateFormItems(it.children, it);
         } else {
           if (parent) {
             it.label = `${parent.label}${it.label}`;
           }
-
           this.formItems.push(it);
         }
       }
@@ -283,15 +341,15 @@ export default {
         const it = this.formItems[idx];
         if (this.dataForm[it.field] != null) {
           continue;
-        } else if (it.default != null) {
+        } else {
           // 默认值
           let defVal = null;
           if (typeof it.default === 'function') {
             defVal = it.default(it, this.dataForm, this.formItems);
-          } else {
+          } else if (it.default != null) {
             defVal = it.default;
           }
-          this.dataForm[it.field] = defVal;
+          this.$set(this.dataForm, it.field, defVal);
         }
       }
     },
@@ -306,6 +364,18 @@ export default {
       this.$refs.dataForm.resetFields();
       this.dataForm = {};
       this.$emit('update:visible', false);
+    },
+    submitUpload(refName) {
+      this.$refs[refName].submit();
+    },
+    onExceed(files, fileList, item) {
+      this.$message.error(`只能上传${item.componentProps?.limit}个文件`);
+    },
+    onChange(file, fileList, item) {
+      item.componentProps?.onChange?.(file, fileList, this.dataForm);
+    },
+    onSuccess(response, file, fileList, item) {
+      item.componentProps?.onSuccess?.(response, file, fileList, this.dataForm);
     }
   }
 };
