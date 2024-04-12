@@ -9,7 +9,7 @@
     width="80%"
     @close="handleClose"
   >
-    <OfficeEdit :key="key" :editorConfig="officeConf" />
+    <OfficeEdit :editor-config="officeConf" />
   </el-dialog>
 </template>
 <script>
@@ -18,6 +18,7 @@ import { randomLenNum } from '@/util';
 
 export default {
   name: 'OfficeEditDialog',
+  components: { OfficeEdit },
   props: {
     visible: {
       type: Boolean,
@@ -28,7 +29,6 @@ export default {
       default: () => ({})
     }
   },
-  components: { OfficeEdit },
   data() {
     return {
       key: randomLenNum()
