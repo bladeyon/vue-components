@@ -147,6 +147,7 @@ export default {
       this.generateForm(this.query.form);
     },
     generateForm(form) {
+      this.form = {};
       form?.forEach((f) => {
         let defVal = null;
         if (f.default != null) {
