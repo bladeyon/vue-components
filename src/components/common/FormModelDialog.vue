@@ -31,6 +31,7 @@
             v-model="dataForm[item.field]"
             :type="item | setType"
             :readonly="item.componentProps?.readonly || false"
+            :disabled="item.componentProps?.disabled || false"
             @input="
               (value) => {
                 handleFormItemEvent(value, item, 'input');
@@ -55,6 +56,7 @@
             v-model="dataForm[item.field]"
             filterable
             collapse-tags
+            :disabled="item.componentProps?.disabled ?? false"
             :clearable="item.componentProps?.clearable ?? true"
             :multiple="item.componentProps?.multiple"
             :allow-create="item.componentProps?.allowCreate"
@@ -95,6 +97,7 @@
             v-model="dataForm[item.field]"
             :type="item | setType"
             :default-value="item.default"
+            :disabled="item.componentProps?.disabled || false"
             :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
             :format="item.componentProps?.format || 'yyyy-MM-dd'"
             size="small"
@@ -105,6 +108,7 @@
           <el-radio-group
             v-else-if="item.component === 'radioGroup'"
             v-model="dataForm[item.field]"
+            :disabled="item.componentProps?.disabled || false"
             @input="
               (value) => {
                 handleFormItemEvent(value, item, 'input');
@@ -343,6 +347,12 @@ export default {
           this.dataForm['fileList_' + it.field] =
             it.componentProps?.getFileList(this.dataForm);
         }
+
+        // 执行初始化
+        if (typeof it.componentProps?.init === 'function') {
+          it.componentProps.init(it, this.dataForm, this.formItems);
+        }
+
         if (this.dataForm[it.field] != null) {
           continue;
         } else {
