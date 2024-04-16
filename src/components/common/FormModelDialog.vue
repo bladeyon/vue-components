@@ -55,6 +55,7 @@
             v-model="dataForm[item.field]"
             filterable
             collapse-tags
+            :clearable="item.componentProps?.clearable ?? true"
             :multiple="item.componentProps?.multiple"
             :allow-create="item.componentProps?.allowCreate"
             @change="
@@ -325,9 +326,6 @@ export default {
     generateFormItems(columns, parent) {
       for (let index = 0; index < columns.length; index++) {
         const it = columns[index];
-        if (it.canEdit === false) {
-          continue;
-        }
         if (it.children?.length) {
           this.generateFormItems(it.children, it);
         } else {
