@@ -56,6 +56,10 @@
             v-model="dataForm[item.field]"
             filterable
             collapse-tags
+            :remote="item.componentProps?.remote ?? false"
+            :remote-method="
+              () => item.componentProps?.remoteMethod(item, dataForm)
+            "
             :disabled="item.componentProps?.disabled ?? false"
             :clearable="item.componentProps?.clearable ?? true"
             :multiple="item.componentProps?.multiple"
@@ -65,6 +69,9 @@
                 handleFormItemEvent(value, item, 'change');
               }
             "
+            @focus="(value) => {
+              handleFormItemEvent(value, item, 'focus');
+            }"
           >
             <span
               v-if="item.componentProps?.multiple"
@@ -410,9 +417,10 @@ export default {
             width: calc(100% - 180px);
           }
 
-          .el-input .el-input__inner,
-          .el-date-editor.el-input__inner {
-            width: 220px;
+          .el-select,
+          .el-date-editor,
+          .el-cascader {
+            width: 100%;
           }
         }
       }
