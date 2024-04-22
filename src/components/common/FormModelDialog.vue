@@ -285,7 +285,14 @@ export default {
       handler(value) {
         if (value) {
           this.formKey = Math.random().toString(16).slice(2, 10);
+
           // 生成 dataForm 响应式数据
+          this.$set(
+            this.dataForm,
+            this.primaryKey,
+            this.formData[this.primaryKey]
+          ); // 主键
+
           for (const { field } of this.fieldItems) {
             this.$set(this.dataForm, field, this.formData[field]);
           }
