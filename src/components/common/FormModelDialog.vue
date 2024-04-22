@@ -69,9 +69,11 @@
                 handleFormItemEvent(value, item, 'change');
               }
             "
-            @focus="(value) => {
-              handleFormItemEvent(value, item, 'focus');
-            }"
+            @focus="
+              (value) => {
+                handleFormItemEvent(value, item, 'focus');
+              }
+            "
           >
             <span
               v-if="item.componentProps?.multiple"
@@ -283,12 +285,10 @@ export default {
       handler(value) {
         if (value) {
           this.formKey = Math.random().toString(16).slice(2, 10);
-          for (const key in this.formData) {
-            if (Object.hasOwnProperty.call(this.formData, key)) {
-              this.$set(this.dataForm, key, this.formData[key]);
-            }
+          // 生成 dataForm 响应式数据
+          for (const { field } of this.fieldItems) {
+            this.$set(this.dataForm, field, this.formData[field]);
           }
-          this.dataForm = cloneDeep(this.formData);
           this.formItems = [];
           this.generateFormItems(cloneDeep(this.fieldItems));
           this.setDefaultValue();
