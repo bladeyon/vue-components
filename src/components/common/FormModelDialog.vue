@@ -293,9 +293,8 @@ export default {
             this.formData[this.primaryKey]
           ); // 主键
 
-          for (const { field } of this.fieldItems) {
-            this.$set(this.dataForm, field, this.formData[field]);
-          }
+          this.generateDataForm(this.fieldItems);
+
           this.formItems = [];
           this.generateFormItems(cloneDeep(this.fieldItems));
           this.setDefaultValue();
@@ -322,6 +321,17 @@ export default {
           this.dataForm,
           this.formItems
         );
+      }
+    },
+    generateDataForm(data) {
+      for (let index = 0; index < data.length; index++) {
+        const { field, children } = data[index];
+
+        if (children?.length) {
+          this.generateDataForm(children);
+        } else {
+          this.$set(this.dataForm, field, this.formData[field]);
+        }
       }
     },
     generateFormRules(source = {}) {
