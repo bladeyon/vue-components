@@ -30,27 +30,23 @@
             v-if="!item.component || item.component === 'input'"
             v-model="dataForm[item.field]"
             :type="item | setType"
+            clearable
             :readonly="item.componentProps?.readonly || false"
             :disabled="item.componentProps?.disabled || false"
-            @input="
-              (value) => {
-                handleFormItemEvent(value, item, 'input');
-              }
-            "
-            @change="
-              (value) => {
-                handleFormItemEvent(value, item, 'change');
-              }
-            "
+            @input="(value) => handleFormItemEvent(value, item, 'input')"
+            @change="(value) => handleFormItemEvent(value, item, 'change')"
           >
           </el-input>
+
           <el-input
             v-else-if="item.component === 'textarea'"
             v-model="dataForm[item.field]"
             type="textarea"
+            clearable
             :rows="item.componentProps?.rows || 3"
           >
           </el-input>
+
           <el-select
             v-else-if="item.component === 'select'"
             v-model="dataForm[item.field]"
@@ -64,16 +60,8 @@
             :clearable="item.componentProps?.clearable ?? true"
             :multiple="item.componentProps?.multiple"
             :allow-create="item.componentProps?.allowCreate"
-            @change="
-              (value) => {
-                handleFormItemEvent(value, item, 'change');
-              }
-            "
-            @focus="
-              (value) => {
-                handleFormItemEvent(value, item, 'focus');
-              }
-            "
+            @change="(value) => handleFormItemEvent(value, item, 'change')"
+            @focus="(value) => handleFormItemEvent(value, item, 'focus')"
           >
             <span
               v-if="item.componentProps?.multiple"
@@ -101,15 +89,16 @@
               :value="opt.value"
             ></el-option>
           </el-select>
+
           <el-date-picker
             v-else-if="item.component === 'datepicker'"
             v-model="dataForm[item.field]"
             :type="item | setType"
+            clearable
             :default-value="item.default"
             :disabled="item.componentProps?.disabled || false"
             :value-format="item.componentProps?.valueFormat || 'yyyy-MM-dd'"
             :format="item.componentProps?.format || 'yyyy-MM-dd'"
-            size="small"
             :placeholder="item.componentProps?.placeholder"
           >
           </el-date-picker>
@@ -118,11 +107,7 @@
             v-else-if="item.component === 'radioGroup'"
             v-model="dataForm[item.field]"
             :disabled="item.componentProps?.disabled || false"
-            @input="
-              (value) => {
-                handleFormItemEvent(value, item, 'input');
-              }
-            "
+            @input="(value) => handleFormItemEvent(value, item, 'input')"
           >
             <el-radio
               v-for="opt in item.componentProps?.options"
@@ -143,6 +128,7 @@
             :props="item.componentProps?.props"
           >
           </el-cascader>
+
           <el-upload
             v-else-if="item.component === 'upload'"
             :ref="'upload' + item.field"
@@ -190,7 +176,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash';
+import { cloneDeep, omit } from 'lodash';
 
 const componentDefCfg = {
   textarea: {
@@ -324,13 +310,21 @@ export default {
       }
     },
     generateDataForm(data) {
+      const canEditColField = [];
       for (let index = 0; index < data.length; index++) {
         const { field, children } = data[index];
-
         if (children?.length) {
           this.generateDataForm(children);
         } else {
           this.$set(this.dataForm, field, this.formData[field]);
+          canEditColField.push(field);
+        }
+      }
+
+      // 不可编辑字段加到 dataForm 中
+      for (const key in omit(this.formData, canEditColField)) {
+        if (Object.prototype.hasOwnProperty.call(this.formData, key)) {
+          this.$set(this.dataForm, key, this.formData[key]);
         }
       }
     },
