@@ -4,7 +4,7 @@
     append-to-body
     :visible="visible"
     :title="getTitle"
-    width="800"
+    :width="formProps.width || '800px'"
     :close-on-click-modal="false"
     :destroy-on-close="true"
     @close="reset"
@@ -15,7 +15,7 @@
       :model="dataForm"
       :rules="rules"
       :inline="true"
-      label-width="180px"
+      :label-width="formProps.labelWidth || '140px'"
     >
       <template v-for="item in formItems">
         <el-form-item
@@ -25,6 +25,7 @@
           :label="item.label"
           :prop="item.field"
           :style="item | setStyle"
+          :label-width="item.labelWidth || formProps.labelWidth || '140px'"
         >
           <el-input
             v-if="!item.component || item.component === 'input'"
@@ -35,6 +36,7 @@
             :disabled="item.componentProps?.disabled || false"
             @input="(value) => handleFormItemEvent(value, item, 'input')"
             @change="(value) => handleFormItemEvent(value, item, 'change')"
+            @focus="(value) => handleFormItemEvent(value, item, 'focus')"
           >
           </el-input>
 
@@ -191,9 +193,19 @@ export default {
   name: 'FormModelDialog',
   filters: {
     setStyle(item) {
-      return (
-        item.style ?? { width: item.component === 'textarea' ? '90%' : '45%' }
-      );
+      const cssObj = {
+        width: item.component === 'textarea' ? '90%' : `48%`
+      };
+      if (typeof item.style === 'string') {
+        item.style.split(';').reduce((acc, cur) => {
+          const [key, value] = cur.split(':');
+          acc[key] = value;
+          return acc;
+        }, cssObj);
+      } else if (typeof item.style === 'object') {
+        Object.assign(cssObj, item.style);
+      }
+      return cssObj;
     },
     setType(item) {
       return (
@@ -204,6 +216,11 @@ export default {
   },
   props: {
     visible: Boolean,
+    title: { type: String, default: '' },
+    formProps: {
+      type: Object,
+      default: () => ({ width: '800px', labelWidth: '140px' })
+    },
     formData: {
       type: Object,
       default: () => ({ id: 1 })
@@ -225,6 +242,7 @@ export default {
         {
           label: '',
           field: '',
+          style: '', // 样式 string 或者 object
           default: '', // 默认值
           components: '', // 表单类型
           componentProps: {
@@ -254,7 +272,7 @@ export default {
   },
   computed: {
     getTitle() {
-      return this.dataForm[this.primaryKey] ? '编辑' : '新增';
+      return this.title || (this.dataForm[this.primaryKey] ? '编辑' : '新增');
     },
     mulSelectStatus() {
       return (field, options) => {
@@ -422,10 +440,19 @@ export default {
         flex-wrap: wrap;
 
         &-item {
-          width: 45%;
+          display: inline-flex;
+
+          &:not(:has(.el-upload)) {
+            align-items: center;
+          }
+
+          &__label {
+            line-height: 22px;
+            word-break: break-word;
+          }
 
           &__content {
-            width: calc(100% - 180px);
+            flex: 1;
           }
 
           .el-select,
