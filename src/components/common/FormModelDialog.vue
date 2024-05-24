@@ -19,7 +19,7 @@
     >
       <template v-for="item in formItems">
         <el-form-item
-          v-show="item.canEdit ?? true"
+          v-if="item.canEdit ?? true"
           :key="item.field"
           class="form-item"
           :label="item.label"
@@ -140,7 +140,10 @@
             :auto-upload="item.componentProps?.autoUpload ?? true"
             :multiple="item.componentProps?.multiple"
             :limit="item.componentProps?.limit"
-            :on-remove="item.componentProps?.onRemove"
+            :before-remove="
+              (file, fileList) => onBeforeRemove(file, fileList, item)
+            "
+            :on-remove="(file, fileList) => onRemove(file, fileList, item)"
             :on-exceed="(files, fileList) => onExceed(files, fileList, item)"
             :on-change="(file, fileList) => onChange(file, fileList, item)"
             :on-success="
@@ -164,7 +167,7 @@
               上传到服务器
             </el-button>
             <div slot="tip" class="el-upload__tip">
-              {{ item.componentProps?.tip }}
+              {{ item.componentProps?.tip ?? '' }}
             </div>
           </el-upload>
         </el-form-item>
@@ -426,6 +429,16 @@ export default {
     },
     onSuccess(response, file, fileList, item) {
       item.componentProps?.onSuccess?.(response, file, fileList, this.dataForm);
+    },
+    onBeforeRemove(file, fileList, item) {
+      return item.componentProps?.onBeforeRemove?.(
+        file,
+        fileList,
+        this.dataForm
+      );
+    },
+    onRemove(file, fileList, item) {
+      item.componentProps?.onRemove?.(file, fileList, this.dataForm);
     }
   }
 };
@@ -447,6 +460,7 @@ export default {
           }
 
           &__label {
+            flex-shrink: 0;
             line-height: 22px;
             word-break: break-word;
           }
