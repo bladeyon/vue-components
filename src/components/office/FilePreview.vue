@@ -43,13 +43,14 @@ import '@vue-office/excel/lib/index.css';
 
 export default {
   name: 'FilePreview',
-  props: {
-    fileUrl: String
-  },
   components: {
     VueOfficeDocx,
     VueOfficeExcel,
     VueOfficePdf
+  },
+  props: {
+    fileUrl: String,
+    fileType: String
   },
   data() {
     return {
@@ -64,7 +65,11 @@ export default {
   },
   computed: {
     ext() {
-      return this.fileUrl.match(/(?<=\.)\w+$/)?.[0].toLowerCase();
+      if (!this.fileType) {
+        const ext = this.fileUrl?.match(/(?:\.([^.]+))?$/)?.[1] ?? null;
+        return ext ? ext.toLowerCase() : null;
+      }
+      return this.fileType;
     },
     height() {
       return this.getMainHeight();
@@ -97,15 +102,17 @@ export default {
       //   type: 'octet-stream',
       //   responseType: 'arraybuffer'
       // });
-      const blob = new Blob([r.data], { type: 'application/force-download; charset=UTF-8' });
+      const blob = new Blob([r.data], {
+        type: 'application/force-download; charset=UTF-8'
+      });
       if (this.ext && !this.suffix.image.includes(this.ext)) {
         // this.src = blob;
-        let reader = new FileReader();
+        const reader = new FileReader();
         reader.readAsArrayBuffer(blob);
         reader.onload = (loadEvent) => {
-          let arrayBuffer = loadEvent.target.result;
-          this.src = arrayBuffer
-        }
+          const arrayBuffer = loadEvent.target.result;
+          this.src = arrayBuffer;
+        };
       } else {
         this.src = URL.createObjectURL(blob);
       }

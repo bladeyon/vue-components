@@ -1,14 +1,14 @@
 <template>
   <el-dialog
-    class="file-preview"
     v-dialog-drag
+    class="file-preview"
     :visible="visible"
     :title="title"
     :width="width ?? '60%'"
     :close-on-click-modal="false"
     @close="reset"
   >
-    <FilePreview :key="key" :fileUrl="fileUrl" />
+    <FilePreview :key="key" :file-url="fileUrl" :file-type="fileType" />
   </el-dialog>
 </template>
 <script>
@@ -27,6 +27,7 @@ export default {
     },
     width: String,
     fileUrl: String,
+    fileType: String,
     visible: Boolean
   },
   data() {
