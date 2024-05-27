@@ -6,16 +6,16 @@
       :data="optionsLatest.data"
       :max-height="
         tableHeight -
-        (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
+          (optionsLatest.showPagination && optionsLatest.total > 0 ? 40 : 0)
       "
       :default-sort="optionsLatest.sort"
       stripe
       fit
       :highlight-current-row="optionsLatest.option.highlightCurrentRow"
       :style="{ width: '100%', fontSize: optionsLatest.fontSize }"
-      @cell-click="cellClick"
       :cell-style="optionsLatest.cellStyle"
       :row-class-name="optionsLatest.rowClassName"
+      @cell-click="cellClick"
       @selection-change="handleSelectionChange"
       @expand-change="handleExpandChange"
     >
@@ -107,6 +107,7 @@
           :sortable="col.sort || false"
           :fixed="col.fixed || false"
           :min-width="col.minWidth || '80px'"
+          :class-name="col.className"
           show-overflow-tooltip
           header-align="center"
           :class="col.children?.length > 0 ? 'is-group' : ''"
@@ -130,9 +131,9 @@
                 >
                   {{
                     btn.label ||
-                    (!col.formatter
-                      ? row[col.field]
-                      : col.formatter(row[col.field]))
+                      (!col.formatter
+                        ? row[col.field]
+                        : col.formatter(row[col.field]))
                   }}
                 </el-button>
               </el-tooltip>
@@ -155,16 +156,16 @@
 >>>>>>> 2dccd24b (列支持是否显示配置)
     </el-table>
     <el-pagination
+      v-show="optionsLatest.showPagination && optionsLatest.total > 0"
       style="margin-top: 6px"
       background
-      v-show="optionsLatest.showPagination && optionsLatest.total > 0"
-      @size-change="changeSize"
-      @current-change="changePage"
       :page-sizes="[10, 20, 50, 100]"
       :page-size.sync="size"
       :current-page.sync="current"
       layout="total, sizes, prev, pager, next, jumper"
       :total="optionsLatest.total"
+      @size-change="changeSize"
+      @current-change="changePage"
     />
   </div>
 </template>
