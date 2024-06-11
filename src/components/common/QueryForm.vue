@@ -95,6 +95,18 @@
             {{ opt.label }}
           </el-radio>
         </el-radio-group>
+
+        <el-cascader
+          v-else-if="item.component === 'cascader'"
+          v-model="dataForm[item.field]"
+          :disabled="item.componentProps?.disabled || false"
+          :options="item.componentProps?.options"
+          clearable
+          filterable
+          :show-all-levels="item.componentProps?.showAllLevels ?? true"
+          :props="item.componentProps?.props"
+        >
+        </el-cascader>
       </el-form-item>
     </template>
     <el-form-item class="form-item">
