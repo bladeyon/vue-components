@@ -43,6 +43,7 @@
           <el-input
             v-else-if="item.component === 'textarea'"
             v-model="dataForm[item.field]"
+            :disabled="item.componentProps?.disabled || false"
             type="textarea"
             clearable
             :rows="item.componentProps?.rows || 3"
@@ -123,17 +124,20 @@
           <el-cascader
             v-else-if="item.component === 'cascader'"
             v-model="dataForm[item.field]"
+            :disabled="item.componentProps?.disabled || false"
             :options="item.componentProps?.options"
             clearable
             filterable
             :show-all-levels="item.componentProps?.showAllLevels ?? true"
             :props="item.componentProps?.props"
+            @change="(value) => handleFormItemEvent(value, item, 'change')"
           >
           </el-cascader>
 
           <el-upload
             v-else-if="item.component === 'upload'"
             :ref="'upload' + item.field"
+            :disabled="item.componentProps?.disabled || false"
             name=""
             :action="item.componentProps?.action ?? ''"
             :http-request="item.componentProps?.httpRequest"
@@ -309,6 +313,12 @@ export default {
           this.generateFormRules(this.formRules);
         }
       }
+    },
+    rules: {
+      deep: true,
+      handler() {
+        this.$refs['dataForm']?.clearValidate();
+      }
     }
   },
   methods: {
@@ -326,7 +336,8 @@ export default {
           value,
           cfg.field,
           this.dataForm,
-          this.formItems
+          this.formItems,
+          this.$refs['dataForm']
         );
       }
     },
