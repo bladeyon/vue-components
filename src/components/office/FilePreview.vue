@@ -49,7 +49,7 @@ export default {
     VueOfficePdf
   },
   props: {
-    fileUrl: String,
+    fileUrl: Object,
     fileType: String
   },
   data() {
@@ -65,9 +65,9 @@ export default {
   },
   computed: {
     ext() {
-      if (!this.fileType) {
+      if (!this.fileType && typeof this.fileUrl === 'string') {
         const ext = this.fileUrl?.match(/(?:\.([^.]+))?$/)?.[1] ?? null;
-        return ext ? ext.toLowerCase() : null;
+        return ext?.toLowerCase() ?? null;
       }
       return this.fileType;
     },
@@ -93,28 +93,31 @@ export default {
         this.reset();
         return;
       }
-      const r = await request({
-        url: this.fileUrl,
-        method: 'get',
-        responseType: 'blob'
-      });
-      // const blob = new Blob([r.data], {
-      //   type: 'octet-stream',
-      //   responseType: 'arraybuffer'
-      // });
-      const blob = new Blob([r.data], {
-        type: 'application/force-download; charset=UTF-8'
-      });
+
+      let fileBlob = null;
+      if (Object.prototype.toString.call(this.fileUrl) === '[object Blob]') {
+        fileBlob = this.fileUrl;
+      } else {
+        const r = await request({
+          url: this.fileUrl,
+          method: 'get',
+          responseType: 'blob'
+        });
+
+        fileBlob = new Blob([r.data], {
+          type: 'application/force-download; charset=UTF-8'
+        });
+      }
+
       if (this.ext && !this.suffix.image.includes(this.ext)) {
-        // this.src = blob;
         const reader = new FileReader();
-        reader.readAsArrayBuffer(blob);
+        reader.readAsArrayBuffer(fileBlob);
         reader.onload = (loadEvent) => {
           const arrayBuffer = loadEvent.target.result;
           this.src = arrayBuffer;
         };
       } else {
-        this.src = URL.createObjectURL(blob);
+        this.src = URL.createObjectURL(fileBlob);
       }
     },
     revokeURL() {
