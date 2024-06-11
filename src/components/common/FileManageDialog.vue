@@ -1,7 +1,7 @@
 <template>
   <el-dialog
-    class="file-manage"
     v-dialog-drag
+    class="file-manage"
     :visible="visible"
     :title="title"
     :width="width ?? '60%'"
@@ -11,13 +11,22 @@
   >
     <DataTable :table-height="tableHeight" :table-opts="tableCfg" />
 
-    <FilePreviewDialog :visible.sync="filePreviewVisible" :file-url="fileUrl" />
+    <FilePreviewDialog
+      :visible.sync="filePreviewVisible"
+      :file-url="fileUrl"
+      :file-type="fileType"
+    />
   </el-dialog>
 </template>
 <script>
 import DataTable from '@/components/common/DataTable.vue';
 import FilePreviewDialog from '@/components/office/FilePreviewDialog.vue';
-import { downloadFile } from '@/api/commonApi';
+import {
+  downloadFile,
+  downloadBlobByFileId,
+  delFileByIds,
+  downloadByFileId
+} from '@/api/commonApi';
 import fileSizeConvert from '@/util/fileSizeConvert';
 
 export default {
@@ -37,6 +46,7 @@ export default {
       type: Object,
       default: () => ({
         parentId: null,
+        data: null,
         query: () => {},
         del: () => {}
       })
@@ -46,6 +56,7 @@ export default {
     return {
       filePreviewVisible: false,
       fileUrl: '',
+      fileType: '',
       tableCfg: {
         option: {
           rowNum: true,
@@ -122,16 +133,22 @@ export default {
       }
     };
   },
-  watch: {
-    visible: {
-      handler(state) {
-        state && this.getFileList();
-      }
-    }
-  },
   computed: {
     tableHeight() {
       return this.getMainHeight();
+    }
+  },
+  watch: {
+    visible: {
+      handler(state) {
+        if (state) {
+          if (this.option.data) {
+            this.tableCfg.data = this.option.data;
+          } else {
+            this.getFileList();
+          }
+        }
+      }
     }
   },
   methods: {
@@ -139,23 +156,40 @@ export default {
       this.$emit('update:visible', false);
     },
     downloadFile(row) {
-      downloadFile('', { url: encodeURIComponent(row.filePath) }, row.fileName);
+      if (!row.filePath) {
+        downloadFile(
+          '',
+          { url: encodeURIComponent(row.filePath) },
+          row.fileName
+        );
+      }
     },
-    filePreview(row) {
+    async filePreview(row) {
+      if (!row.filePath) {
+        this.fileUrl = await downloadBlobByFileId(row.fileId);
+      } else {
+        this.fileUrl = `/temp/file/download?url=${encodeURI(row.filePath)}`;
+      }
+      this.fileType = row.fileType;
       this.filePreviewVisible = true;
-      this.fileUrl = `/temp/file/download?url=${encodeURI(row.filePath)}`;
     },
     async getFileList() {
-      const res = await this.option.query(this.option.parentId);
+      const res = await this.option.query?.(this.option.parentId);
       const records = res.data?.data;
       this.tableCfg.data = records.fileList;
     },
     async removeFile(row) {
       const { fileId } = row;
-      const res = await this.option.del(fileId);
-      if (!!res.data?.data) {
+      const res = await this.option.del?.(fileId);
+      if (res.data?.data) {
         this.$message.success('删除成功');
-        this.getFileList();
+        if (this.option.data) {
+          this.tableCfg.data = this.option.data.filter(
+            (d) => d.fileId !== fileId
+          );
+        } else {
+          this.getFileList();
+        }
       } else {
         this.$message.error(res.data?.msg);
       }
