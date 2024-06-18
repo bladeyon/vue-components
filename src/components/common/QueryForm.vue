@@ -105,6 +105,7 @@
           filterable
           :show-all-levels="item.componentProps?.showAllLevels ?? true"
           :props="item.componentProps?.props"
+          @change="(value) => handleFormItemEvent(value, item, 'change')"
         >
         </el-cascader>
       </el-form-item>
@@ -145,7 +146,7 @@ export default {
   data() {
     return {
       dataForm: {},
-      formItem: [],
+      formItems: [],
       formKey: randomLenNum()
     };
   },
