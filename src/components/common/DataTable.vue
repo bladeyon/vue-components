@@ -40,62 +40,7 @@
         width="50"
         label="序号"
         align="center"
-<<<<<<< HEAD
-      >
-      </el-table-column>
-<<<<<<< HEAD
-<<<<<<< HEAD
-      <el-table-column
-        v-for="col in optionsLatest.cols"
-        :key="col.field"
-        :prop="col.field"
-        :label="col.label"
-        :align="col.align || 'center'"
-        :width="col.width"
-        :sortable="col.sort || false"
-        :fixed="col.fixed || false"
-        :min-width="col.minWidth || '80px'"
-        show-overflow-tooltip
-        header-align="center"
-        :class="col.children?.length > 0 ? 'is-group' : ''"
-      >
-        <template slot-scope="{ row }">
-          <span v-if="col.OperateBtn">
-            <el-button
-              v-for="btn in col.OperateBtn"
-              :key="btn.label"
-              :icon="btn.icon"
-              type="text"
-              size="mini"
-              @click="btn.handler($event, row)"
-            >
-              {{ btn.label }}
-            </el-button>
-          </span>
-          <span v-else :style="col.style">
-            {{
-              !col.formatter
-                ? row[col.field]
-                : col.formatter(row[col.field], row)
-            }}
-          </span>
-        </template>
-        <TableColItem
-          v-for="child in col.children"
-          :key="child.field"
-          :colOpts="child"
-        />
-      </el-table-column>
-=======
-      <TableColItem
-        v-if="!!optionsLatest.cols && optionsLatest.cols.length > 0"
-        :columns="optionsLatest.cols"
       />
->>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
-=======
-=======
-      />
->>>>>>> 03c53457 (对部分文件进行 lint)
       <template v-for="col in optionsLatest.cols">
         <el-table-column
           v-if="col.isShow !== false"
@@ -123,7 +68,7 @@
                 effect="dark"
               >
                 <el-button
-                  v-show="(btn.premCheck && btn.premCheck(row)) ?? true"
+                  v-if="(btn.premCheck && btn.premCheck(row)) ?? true"
                   :icon="btn.icon"
                   type="text"
                   size="mini"
@@ -153,7 +98,6 @@
           />
         </el-table-column>
       </template>
->>>>>>> 2dccd24b (列支持是否显示配置)
     </el-table>
     <el-pagination
       v-show="optionsLatest.showPagination && optionsLatest.total > 0"
@@ -272,43 +216,7 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-<<<<<<< HEAD
-.data-table {
-<<<<<<< HEAD
-=======
-  .el-table ::v-deep {
-    .is-group > tr:nth-child(odd) { // 存在叶子节点时, 隐藏空白列
-      display: none;
-    }
-  }
->>>>>>> 30052b2a (修复多级时,叶子列排序混乱的问题)
-=======
 .data-table ::v-deep {
-<<<<<<< HEAD
-  .el-table__row {
-    .el-table__cell {
-      .el-button.el-button--text {
-        i[class*='el-icon-'] {
-          font-size: $font-size-m;
-
-          // 删除图标
-          &[class*='delete'] {
-            color: $color-danger;
-          }
-
-          // 编辑、预览图标
-          &[class*='edit'],
-          &[class*='reading'] {
-            color: $color-success;
-          }
-        }
-      }
-    }
-  }
-
->>>>>>> 8dc9c8dd (表格公共组件增加嵌套子表格功能；设定常用的行间按钮样式)
-=======
->>>>>>> 164c7064 (style: 表格中操作列的按钮统一设置样式)
   & > .el-pagination {
     text-align: right;
   }
