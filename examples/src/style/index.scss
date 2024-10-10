@@ -1,0 +1,24 @@
+@import './normalize.scss';
+@import './common.scss';
+
+@import './scv-variables.scss';
+
+/**
+* vue-components 样式 
+* vue-components 依赖 element-ui@^2.15.7 等包，已在 package.json 的 peerDependencies 中配置
+* 如果没有自动安装依赖，需要手动安装
+*/
+
+// 注意：有时会出现路径获取不到的问题，用相对路径
+// 1. 如果需要修改样式，则必须指定 图标字体路径，并导入 scss，否则外部无法覆盖 element 变量
+// $--font-path: 'element-ui/packages/theme-chalk/src/fonts';
+// @import 'element-ui/packages/theme-chalk/src/index.scss';
+$--font-path: '../../../node_modules/element-ui/packages/theme-chalk/src/fonts';
+@import '../../../node_modules/element-ui/packages/theme-chalk/src/index.scss';
+
+// 2. 如果不需要修改样式，则可以直接导入 css
+// @import 'element-ui/lib/theme-chalk/index.css';
+
+// @import '../../../node_modules/vue-components/lib/style.css';
+
+@import 'lib/style.css';
