@@ -49,19 +49,19 @@
 
 #### operateBtns 操作按钮
 
-| 属性      | 说明                |          类型           | 默认值 | 可选值     |
-| --------- | ------------------- | :---------------------: | :----: | ---------- |
-| label     | 按钮文本            |         string          |   ""   | -          |
-| icon      | 图标类名            |         string          |   -    | -          |
-| style     | 按钮样式            |   string / CSSObject    |   -    | -          |
-| type      | 操作类型            |         string          | "text" | `按钮类型` |
-| tips      | 鼠标 hover 提示信息 |         string          |   -    | -          |
-| premCheck | 权限校验            | function(row) / boolean |  true  | -          |
-| handler   | 按钮点击事件        |      function(row)      |   -    | -          |
+| 属性      | 说明                |          类型           | 默认值 | 可选值   |
+| --------- | ------------------- | :---------------------: | :----: | -------- |
+| label     | 按钮文本            |         string          |   ""   | -        |
+| icon      | 图标类名            |         string          |   -    | -        |
+| style     | 按钮样式            |   string / CSSObject    |   -    | -        |
+| type      | 操作类型            |         string          | "text" | 按钮类型 |
+| tips      | 鼠标 hover 提示信息 |         string          |   -    | -        |
+| premCheck | 权限校验            | function(row) / boolean |  true  | -        |
+| handler   | 按钮点击事件        |      function(row)      |   -    | -        |
 
 ## 事件
 
-| 事件名       | 说明           | 参数                       |
+| 事件名       | 说明           | 回调函数参数               |
 | ------------ | -------------- | -------------------------- |
 | cellClick    | 单元格点击事件 | (row, column, cell, event) |
 | rowSelection | 选中行         | (row)                      |
@@ -78,9 +78,7 @@
 
 ```vue
 <template>
-  <div>
-    <DataTable :table-opts="tableOpts" @changePage="handlePageChange" />
-  </div>
+  <DataTable :table-opts="tableOpts" @changePage="handlePageChange" />
 </template>
 
 <script>

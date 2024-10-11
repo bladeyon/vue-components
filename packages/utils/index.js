@@ -126,3 +126,19 @@ export function generateColumns(cols, colsConfig) {
   }
   return mergeColConfig(cols, colsConfig);
 }
+
+/**
+ * 计算文本渲染后所占宽度
+ */
+export function getTextWidth(text, fontSize) {
+  // 创建一个新的canvas元素
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+
+  // 设置字体样式
+  context.font = `${fontSize}px Arial`;
+
+  // 测量文本的宽度
+  const metrics = context.measureText(text);
+  return metrics.width;
+}

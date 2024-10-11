@@ -20,7 +20,10 @@ export default defineConfig({
           { text: 'TreeTable', link: '/TreeTable' },
           { text: 'FormDialog', link: '/FormDialog' },
           { text: 'CRUDPage', link: '/CRUDPage' },
-          { text: 'ScrollTable', link: '/ScrollTable' }
+          { text: 'ScrollTable', link: '/ScrollTable' },
+          { text: 'ImageSlideDialog', link: '/ImageSlideDialog' },
+          { text: 'Bar3DChart', link: '/Bar3DChart' },
+          { text: 'MultiXYChart', link: '/MultiXYChart' }
         ]
       }
     ],
@@ -45,5 +48,8 @@ export default defineConfig({
         lib: fileURLToPath(new URL('../../lib', import.meta.url))
       }
     }
+  },
+  markdown: {
+    lineNumbers: true
   }
 });

@@ -8,6 +8,9 @@ import TreeTable from '~/components/tree-table/index';
 import FormDialog from '~/components/form-dialog/index';
 import ScrollTable from '~/components/scroll-table/index';
 import CRUDPage from '~/components/crud-page/index';
+import ImageSlideDialog from '~/components/image-slide-dialog/index';
+import Bar3DChart from '~/components/bar-3d-chart/index';
+import MultiXYChart from '~/components/multi-xy-chart/index';
 
 const components = [
   QueryForm,
@@ -16,7 +19,10 @@ const components = [
   TreeTable,
   FormDialog,
   ScrollTable,
-  CRUDPage
+  CRUDPage,
+  ImageSlideDialog,
+  Bar3DChart,
+  MultiXYChart
 ];
 
 const install = function (Vue, opts = {}) {
@@ -43,5 +49,8 @@ export {
   TreeTable,
   FormDialog,
   ScrollTable,
-  CRUDPage
+  CRUDPage,
+  ImageSlideDialog,
+  Bar3DChart,
+  MultiXYChart
 };

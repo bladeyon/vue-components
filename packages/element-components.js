@@ -23,7 +23,8 @@ import {
   Tooltip,
   Dialog,
   Message,
-  MessageBox
+  MessageBox,
+  Image
 } from 'element-ui';
 
 // Message 和 MessageBox 都没有 install 方法，而程序中一般都调用当前组件上的，通过原型链找到 Vue 原型上的方法
@@ -60,5 +61,6 @@ Vue.use(Tooltip);
 Vue.use(Dialog);
 Vue.use(Message);
 Vue.use(MessageBox);
+Vue.use(Image);
 
 Vue.directive('dialog-drag', dialogDrag); // 对话框拖动

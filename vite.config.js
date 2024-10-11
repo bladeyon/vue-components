@@ -20,7 +20,8 @@ export default defineConfig({
         // 'element-ui', // 如果排除掉，会出现打包压缩后找不到css文件的问题，因为压缩替换为别名的原因
         'katex',
         'lodash',
-        'vue-seamless-scroll'
+        'vue-seamless-scroll',
+        'echarts'
       ],
       output: {
         globals: {
@@ -28,7 +29,8 @@ export default defineConfig({
           // 'element-ui': 'ElementUI',
           katex: 'katex',
           lodash: 'lodash',
-          'vue-seamless-scroll': 'VueSeamlessScroll'
+          'vue-seamless-scroll': 'VueSeamlessScroll',
+          echarts: 'echarts'
         },
         exports: 'named'
       }
